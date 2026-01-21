@@ -29,9 +29,9 @@ subprojects {
                 from components.java;
 
                 pom {
-                    name = 'MinecraftRLib';
+                    name = 'MinecraftGLWrapper';
                     description = 'Simple OpenGL 3.0+ wrapper for Minecraft with minimal custom shader support';
-                    url = 'https://github.com/projectAccounth/RenderLib';
+                    url = 'https://github.com/projectAccounth/MinecraftGLWrapper';
 
                     licenses {
                         license {
@@ -41,7 +41,7 @@ subprojects {
                     }
 
                     scm {
-                        url = 'https://github.com/projectAccounth/RenderLib';
+                        url = 'https://github.com/projectAccounth/MinecraftGLWrapper';
                     }
                 }
             }
