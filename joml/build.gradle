@@ -1,0 +1,37 @@
+plugins {
+    id 'com.gradleup.shadow' version '9.3.1'
+}
+
+dependencies {
+    api(project(":core"));
+    compileOnly("org.lwjgl:lwjgl:3.3.2");
+    compileOnly("org.lwjgl:lwjgl-opengl:3.3.2");
+    implementation("org.joml:joml:1.10.5");
+    compileOnly('commons-io:commons-io:2.18.0')
+}
+
+tasks.jar {
+    enabled = false;
+}
+
+shadowJar {
+    archiveClassifier.set("");
+
+    relocate("org.joml", "net.not_thefirst.lib.gl_render_system.shadow.joml");
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact(tasks.shadowJar);
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17);
+    }
+    withSourcesJar();
+    withJavadocJar();
+}

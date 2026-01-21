@@ -1,0 +1,54 @@
+plugins {
+    id 'com.gradleup.shadow' version '9.3.1' apply false
+}
+
+allprojects {
+    group = project.maven_group;
+    version = project.version;
+
+    repositories {
+        mavenCentral();
+    }
+}
+
+subprojects {
+    apply plugin: "java-library";
+    apply plugin: "maven-publish";
+    
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17);
+        }
+        withSourcesJar();
+        withJavadocJar();
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java;
+
+                pom {
+                    name = 'MinecraftRLib';
+                    description = 'Simple OpenGL 3.0+ wrapper for Minecraft with minimal custom shader support';
+                    url = 'https://github.com/projectAccounth/RenderLib';
+
+                    licenses {
+                        license {
+                            name = 'GNU Lesser General Public License v3.0';
+                            url = 'https://www.gnu.org/licenses/lgpl-3.0.html';
+                        }
+                    }
+
+                    scm {
+                        url = 'https://github.com/projectAccounth/RenderLib';
+                    }
+                }
+            }
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = "UTF-8";
+    }
+}

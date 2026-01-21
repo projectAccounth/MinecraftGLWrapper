@@ -1,0 +1,10 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+    compileOnly("org.joml:joml:1.10.5");
+    compileOnly("org.lwjgl:lwjgl:3.3.2");
+    compileOnly("org.lwjgl:lwjgl-opengl:3.3.2");
+    compileOnly("commons-io:commons-io:2.18.0");
+}
