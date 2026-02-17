@@ -16,9 +16,11 @@ java {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        release(MavenPublication) {
             from components.java
             artifactId = "opengl-grl"
+            groupId rootProject.group
+            version rootProject.version
         }
     }
 }

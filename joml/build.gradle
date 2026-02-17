@@ -22,11 +22,14 @@ shadowJar {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        release(MavenPublication) {
             artifact(tasks.shadowJar);
 
             from components.java
             artifactId = "opengl-grl-joml"
+
+            groupId rootProject.group
+            version rootProject.version
         }
     }
 }

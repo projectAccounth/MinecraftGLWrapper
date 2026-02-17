@@ -8,6 +8,7 @@ allprojects {
 
     repositories {
         mavenCentral();
+        maven { url 'https://jitpack.io' }
     }
 }
 
@@ -27,23 +28,6 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 from components.java;
-
-                pom {
-                    name = 'MinecraftGLWrapper';
-                    description = 'Simple OpenGL 3.0+ wrapper for Minecraft with minimal custom shader support';
-                    url = 'https://github.com/projectAccounth/MinecraftGLWrapper';
-
-                    licenses {
-                        license {
-                            name = 'GNU Lesser General Public License v3.0';
-                            url = 'https://www.gnu.org/licenses/lgpl-3.0.html';
-                        }
-                    }
-
-                    scm {
-                        url = 'https://github.com/projectAccounth/MinecraftGLWrapper';
-                    }
-                }
             }
         }
     }
