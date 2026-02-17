@@ -8,3 +8,17 @@ dependencies {
     compileOnly("org.lwjgl:lwjgl-opengl:3.3.2");
     compileOnly("commons-io:commons-io:2.18.0");
 }
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId = "opengl-grl"
+        }
+    }
+}
