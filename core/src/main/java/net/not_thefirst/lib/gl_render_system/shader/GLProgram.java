@@ -115,6 +115,11 @@ public final class GLProgram implements AutoCloseable {
         }
     }
 
+    public void bindTexture(String samplerName, GLTextureBinding binding, int unit) {
+        binding.bind(unit);
+        setSampler(samplerName, unit);
+    }
+
     public void validate() {
         GL20.glValidateProgram(programId);
         if (GL20.glGetProgrami(programId, GL20.GL_VALIDATE_STATUS) == GL11.GL_FALSE) {

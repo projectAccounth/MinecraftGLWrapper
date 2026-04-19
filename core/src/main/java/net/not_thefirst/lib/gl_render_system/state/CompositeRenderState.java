@@ -2,7 +2,7 @@ package net.not_thefirst.lib.gl_render_system.state;
 
 public final class CompositeRenderState implements RenderState {
 
-    private final RenderState[] states;
+    final RenderState[] states;
 
     public CompositeRenderState(RenderState... states) {
         this.states = states;

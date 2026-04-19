@@ -12,6 +12,13 @@ public abstract class AbstractGpuMesh implements GpuMesh {
     protected final int drawMode;
     protected final VertexFormat format;
 
+    /**
+     * Creates a new GPU mesh with the given parameters. The VAO and VBO should already be set up with the appropriate vertex data.
+     * @param vao The vertex array object ID.
+     * @param vbo The vertex buffer object ID.
+     * @param drawMode The OpenGL draw mode (e.g. GL_TRIANGLES).
+     * @param format The vertex format describing the layout of the vertex data (refer to {@link net.not_thefirst.lib.gl_render_system.vertex.VertexFormat} for details).
+     */
     protected AbstractGpuMesh(
         int vao,
         int vbo,

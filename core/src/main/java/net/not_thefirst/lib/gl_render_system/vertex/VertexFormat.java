@@ -1,6 +1,9 @@
 package net.not_thefirst.lib.gl_render_system.vertex;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,6 +14,9 @@ import net.not_thefirst.lib.gl_render_system.mesh.CompiledMesh;
 
 public final class VertexFormat {
 
+    /**
+     * Defines the type of vertex attribute. This is used to identify the purpose of each attribute in the vertex data, such as position, color, normal, etc. The rendering system uses this information to correctly interpret the vertex data when rendering meshes.
+     */
     public enum VertexAttribute {
         POSITION,
         COLOR,
@@ -20,8 +26,12 @@ public final class VertexFormat {
         TANGENT
     }
 
+    /**
+     * Represents a single vertex attribute in the vertex format. It contains information about the attribute type (e.g. position, color), the number of components (e.g. 3 for position), the OpenGL data type (e.g. GL_FLOAT), and whether the data should be normalized (e.g. for colors). This class is used to define the layout of vertex data in memory and how it should be interpreted by the GPU when rendering.
+     */
     public static final class Element {
 
+        
         public final VertexAttribute attribute;
         public final int componentCount;
         public final int glType;
@@ -44,20 +54,19 @@ public final class VertexFormat {
         }
 
         private static int glTypeSize(int glType) {
-            return switch (glType) {
-                case GL11.GL_FLOAT -> Float.BYTES;
-                case GL11.GL_UNSIGNED_BYTE, GL11.GL_BYTE -> Byte.BYTES;
-                case GL11.GL_UNSIGNED_SHORT, GL11.GL_SHORT -> Short.BYTES;
-                case GL11.GL_INT -> Integer.BYTES;
-                default -> throw new IllegalArgumentException(
-                    "Unsupported GL type: " + glType
-                );
-            };
+
+            if (glType == GL11.GL_FLOAT) return Float.BYTES;
+            if (glType == GL11.GL_UNSIGNED_BYTE || glType == GL11.GL_BYTE) return Byte.BYTES;
+            if (glType == GL11.GL_UNSIGNED_SHORT || glType == GL11.GL_SHORT) return Short.BYTES;
+            if (glType == GL11.GL_INT) return Integer.BYTES;
+            
+            throw new IllegalArgumentException("Unsupported GL type: " + glType);
         }
 
         @Override
         public boolean equals(Object o) {
-            if (!(o instanceof Element e)) return false;
+            if (!(o instanceof Element)) return false;
+            Element e = (Element) o;
             return attribute == e.attribute &&
                    componentCount == e.componentCount &&
                    glType == e.glType &&
@@ -77,7 +86,7 @@ public final class VertexFormat {
     private final int[] locations;
 
     public VertexFormat(List<Element> elements) {
-        this.elements = List.copyOf(elements);
+        this.elements = Collections.unmodifiableList(new ArrayList<>(elements));
 
         this.offsets = new int[elements.size()];
         this.locations = new int[elements.size()];
@@ -134,38 +143,62 @@ public final class VertexFormat {
         final float[] uvs       = mesh.uvs();
         final int[]   colors    = mesh.colors();
         for (Element e : elements) {
-            switch (e.attribute) {
-                case POSITION -> {
-                    int p = vertexIndex * 3;
+
+            if (e.attribute == VertexAttribute.POSITION && positions == null) {
+                throw new IllegalStateException(
+                    "Mesh is missing positions but format requires them"
+                );
+            }
+            if (e.attribute == VertexAttribute.NORMAL && normals == null) {
+                throw new IllegalStateException(
+                    "Mesh is missing normals but format requires them"
+                );
+            }
+            if (e.attribute == VertexAttribute.UV0 && uvs == null) {
+                throw new IllegalStateException(
+                    "Mesh is missing UVs but format requires them"
+                );
+            }
+            if (e.attribute == VertexAttribute.COLOR && colors == null) {
+                throw new IllegalStateException(
+                    "Mesh is missing colors but format requires them"
+                );
+            }
+
+            int p;
+
+            switch(e.attribute) {
+                case POSITION:
+                    p = vertexIndex * 3;
                     buf.putFloat(positions[p]     + offX);
                     buf.putFloat(positions[p + 1] + offY);
                     buf.putFloat(positions[p + 2] + offZ);
-                }
-                case NORMAL -> {
-                    int p = vertexIndex * 3;
+                    break;
+                case NORMAL:
+                    p = vertexIndex * 3;
                     buf.putFloat(normals[p]);
                     buf.putFloat(normals[p + 1]);
                     buf.putFloat(normals[p + 2]);
-                }
-                case UV0 -> {
-                    int p = vertexIndex * 2;
+                    break;
+                case UV0:
+                    p = vertexIndex * 2;
                     buf.putFloat(uvs[p]);
                     buf.putFloat(uvs[p + 1]);
-                }
-                case COLOR -> {
+                    break;
+                case COLOR:
                     int c = colors[vertexIndex];
                     buf.put((byte)((c >> 16) & 0xFF)); // R
                     buf.put((byte)((c >> 8) & 0xFF));  // G
                     buf.put((byte)(c & 0xFF));         // B
                     buf.put((byte)((c >> 24) & 0xFF)); // A
-                }
-                default -> throw new IllegalStateException(
-                    "Unhandled attribute: " + e.attribute
-                );
+                    break;
+                default:
+                    throw new IllegalStateException(
+                        "Unhandled attribute: " + e.attribute
+                    );
             }
         }
     }
-
     public static final Element POSITION =
         new Element(VertexAttribute.POSITION, 3, GL11.GL_FLOAT, false);
 
@@ -182,14 +215,14 @@ public final class VertexFormat {
         new Element(VertexAttribute.UV1, 2, GL11.GL_FLOAT, false);
 
     public static final VertexFormat POSITION_COLOR =
-        new VertexFormat(List.of(POSITION, COLOR));
+        new VertexFormat(Arrays.asList(POSITION, COLOR));
 
     public static final VertexFormat POSITION_COLOR_TEX =
-        new VertexFormat(List.of(POSITION, COLOR, UV0));
+        new VertexFormat(Arrays.asList(POSITION, COLOR, UV0));
 
     public static final VertexFormat POSITION_COLOR_NORMAL =
-        new VertexFormat(List.of(POSITION, COLOR, NORMAL));
+        new VertexFormat(Arrays.asList(POSITION, COLOR, NORMAL));
 
     public static final VertexFormat POSITION_COLOR_NORMAL_TEX =
-        new VertexFormat(List.of(POSITION, COLOR, NORMAL, UV0));
+        new VertexFormat(Arrays.asList(POSITION, COLOR, NORMAL, UV0));
 }

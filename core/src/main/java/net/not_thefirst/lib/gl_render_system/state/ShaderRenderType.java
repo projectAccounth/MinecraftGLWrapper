@@ -26,13 +26,7 @@ public final class ShaderRenderType extends RenderType {
     }
 
     static RenderState[] stateStates(CompositeRenderState s) {
-        try {
-            var f = CompositeRenderState.class.getDeclaredField("states");
-            f.setAccessible(true);
-            return (RenderState[]) f.get(s);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        return s.states;
     }
 
     public GLProgram program() {
