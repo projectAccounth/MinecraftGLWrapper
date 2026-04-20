@@ -19,8 +19,6 @@ publishing {
         release(MavenPublication) {
             from components.java
             artifactId = "opengl-grl"
-            groupId rootProject.group
-            version rootProject.version
         }
     }
 }

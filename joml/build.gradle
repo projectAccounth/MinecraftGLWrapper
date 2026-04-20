@@ -27,9 +27,6 @@ publishing {
 
             from components.java
             artifactId = "opengl-grl-joml"
-
-            groupId rootProject.group
-            version rootProject.version
         }
     }
 }
