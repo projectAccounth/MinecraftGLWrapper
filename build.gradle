@@ -8,23 +8,76 @@ allprojects {
 
     repositories {
         mavenCentral();
-        maven { url 'https://jitpack.io' }
     }
 }
 
 subprojects {
-    apply plugin: "java-library";
-    apply plugin: "maven-publish";
-    
+    apply plugin: "java-library"
+    apply plugin: "maven-publish"
+    apply plugin: "signing"
+
     java {
         toolchain {
-            languageVersion = JavaLanguageVersion.of(8);
+            languageVersion = JavaLanguageVersion.of(8)
         }
-        withSourcesJar();
-        withJavadocJar();
+        withSourcesJar()
+        withJavadocJar()
     }
     
     tasks.withType(JavaCompile).configureEach {
-        options.encoding = "UTF-8";
+        options.encoding = "UTF-8"
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+
+                pom {
+                    name = project.name
+                    description = "Library"
+                    url = "https://github.com/projectAccounth/MinecraftGLWrapper"
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://apache.org'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'not_thefirst'
+                            name = 'not_thefirst'
+                        }
+                    }
+                    scm {
+                        connection = "scm:git:git://://github.com/projectAccounth/MinecraftGLWrapper.git"
+                        developerConnection = "scm:git:ssh://://github.com/projectAccounth/MinecraftGLWrapper.git"
+                        url = "https://github.com/projectAccounth/MinecraftGLWrapper"
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "CentralPortal"
+                url = "https://sonatype.com"
+                credentials {
+                    username = System.getenv("SONATYPE_USERNAME")
+                    password = System.getenv("SONATYPE_PASSWORD")
+                }
+            }
+        }
+    }
+
+    signing {
+        def signingKey = System.getenv("GPG_SIGNING_KEY")
+        def signingPassword = System.getenv("GPG_PASSPHRASE")
+
+        if (signingKey != null) {
+            byte[] decodedKey = signingKey.decodeBase64()
+            useInMemoryPgpKeys(new String(decodedKey), signingPassword)
+            sign publishing.publications.mavenJava
+        }
     }
 }
