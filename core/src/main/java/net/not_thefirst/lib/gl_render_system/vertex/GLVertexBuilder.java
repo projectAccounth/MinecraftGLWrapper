@@ -3,9 +3,9 @@ package net.not_thefirst.lib.gl_render_system.vertex;
 import net.not_thefirst.lib.gl_render_system.mesh.BuildingMesh;
 import net.not_thefirst.lib.utils.math.ARGB;
 
-public class VertexBuilder {
+public class GLVertexBuilder {
 
-    private VertexBuilder() {}
+    private GLVertexBuilder() {}
     
     public static void quad(BuildingMesh bb, float x0, float y0, float z0,
         float x1, float y1, float z1, float x2, float y2, float z2,

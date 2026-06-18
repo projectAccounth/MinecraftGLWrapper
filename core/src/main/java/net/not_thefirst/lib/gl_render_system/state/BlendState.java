@@ -1,5 +1,7 @@
 package net.not_thefirst.lib.gl_render_system.state;
 
+import java.util.Objects;
+
 import org.lwjgl.opengl.GL11;
 
 public final class BlendState implements RenderState {
@@ -12,6 +14,9 @@ public final class BlendState implements RenderState {
 
     public static final BlendState TRANSLUCENT =
         new BlendState(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+    public static final BlendState OPAQUE =
+        new BlendState(GL11.GL_ONE, GL11.GL_ZERO);
 
     public BlendState(int src, int dst) {
         this.src = src;
@@ -31,5 +36,16 @@ public final class BlendState implements RenderState {
     @Override
     public void clear() {
         GL11.glDisable(GL11.GL_BLEND);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof BlendState)) return false;
+        return ((BlendState) o).src == this.src && ((BlendState) o).dst == this.dst;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(src, dst);
     }
 }

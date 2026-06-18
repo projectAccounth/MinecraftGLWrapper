@@ -23,6 +23,7 @@ public final class VertexFormat {
         NORMAL,
         UV0,
         UV1,
+        UV2,
         TANGENT
     }
 
@@ -199,6 +200,19 @@ public final class VertexFormat {
             }
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof VertexFormat)) return false;
+        VertexFormat f = (VertexFormat) o;
+        return this.elements.equals(f.elements);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(elements);
+    }
+
     public static final Element POSITION =
         new Element(VertexAttribute.POSITION, 3, GL11.GL_FLOAT, false);
 
@@ -214,8 +228,17 @@ public final class VertexFormat {
     public static final Element UV1 =
         new Element(VertexAttribute.UV1, 2, GL11.GL_FLOAT, false);
 
+    public static final Element UV2 =
+        new Element(VertexAttribute.UV2, 2, GL11.GL_FLOAT, false);
+
     public static final VertexFormat POSITION_COLOR =
         new VertexFormat(Arrays.asList(POSITION, COLOR));
+
+    public static final VertexFormat POSITION_TEX =
+        new VertexFormat(Arrays.asList(POSITION, UV0));
+
+    public static final VertexFormat POSITION_TEX_LIGHTMAP =
+        new VertexFormat(Arrays.asList(POSITION, UV0, UV1));
 
     public static final VertexFormat POSITION_COLOR_TEX =
         new VertexFormat(Arrays.asList(POSITION, COLOR, UV0));
@@ -225,4 +248,10 @@ public final class VertexFormat {
 
     public static final VertexFormat POSITION_COLOR_NORMAL_TEX =
         new VertexFormat(Arrays.asList(POSITION, COLOR, NORMAL, UV0));
+
+    public static final VertexFormat POSITION_COLOR_TEX_LIGHTMAP =
+        new VertexFormat(Arrays.asList(POSITION, COLOR, UV0, UV1));
+    
+    public static final VertexFormat POSITION_COLOR_NORMAL_LIGHTMAP =
+        new VertexFormat(Arrays.asList(POSITION, COLOR, NORMAL, UV1));
 }

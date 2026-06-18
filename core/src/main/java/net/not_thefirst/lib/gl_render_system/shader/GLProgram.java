@@ -150,4 +150,15 @@ public final class GLProgram implements AutoCloseable {
         use();
         return this;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof GLProgram)) return false;
+        return ((GLProgram) o).programId == this.programId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(programId);
+    }
 }

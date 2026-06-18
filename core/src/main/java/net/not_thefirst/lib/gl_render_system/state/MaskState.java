@@ -1,5 +1,7 @@
 package net.not_thefirst.lib.gl_render_system.state;
 
+import java.util.Objects;
+
 import org.lwjgl.opengl.GL11;
 
 public class MaskState implements RenderState {
@@ -34,5 +36,16 @@ public class MaskState implements RenderState {
 
     public boolean writeDepth() { 
         return this.writeDepth;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof MaskState)) return false;
+        return ((MaskState) o).writeColor == this.writeColor && ((MaskState) o).writeDepth == this.writeDepth;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(writeColor, writeDepth);
     }
 }

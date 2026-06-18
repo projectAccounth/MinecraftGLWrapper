@@ -1,5 +1,7 @@
 package net.not_thefirst.lib.gl_render_system.state;
 
+import java.util.Objects;
+
 import org.lwjgl.opengl.GL11;
 
 public final class CullState implements RenderState {
@@ -25,5 +27,16 @@ public final class CullState implements RenderState {
     @Override
     public void clear() {
         GL11.glDisable(GL11.GL_CULL_FACE);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof CullState)) return false;
+        return ((CullState) o).enabled == this.enabled;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(enabled);
     }
 }

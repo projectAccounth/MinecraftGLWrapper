@@ -29,6 +29,7 @@ public final class GLStateGuard implements AutoCloseable {
     private final int vao;
     private final int arrayBuffer;
     private final int elementArrayBuffer;
+    private final int frameBuffer;
 
     private final boolean depthTest;
     private final int depthFunc;
@@ -103,6 +104,8 @@ public final class GLStateGuard implements AutoCloseable {
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         boundTexture2D = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
         samplerBinding = GL11.glGetInteger(GL33.GL_SAMPLER_BINDING);
+
+        frameBuffer = GL11.glGetInteger(GL30.GL_FRAMEBUFFER);
     }
 
     @Override

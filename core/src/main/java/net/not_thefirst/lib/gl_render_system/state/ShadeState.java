@@ -1,5 +1,7 @@
 package net.not_thefirst.lib.gl_render_system.state;
 
+import java.util.Objects;
+
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -48,5 +50,16 @@ public class ShadeState implements RenderState {
     @Override
     public void clear() {
         // no-op
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ShadeState)) return false;
+        return ((ShadeState) o).type == this.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type);
     }
 }
