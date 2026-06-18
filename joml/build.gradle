@@ -22,10 +22,8 @@ shadowJar {
 
 publishing {
     publications {
-        release(MavenPublication) {
+        mavenJava(MavenPublication) {
             artifact(tasks.shadowJar);
-
-            from components.java
             artifactId = "opengl-grl-joml"
         }
     }

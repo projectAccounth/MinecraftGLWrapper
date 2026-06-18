@@ -1,5 +1,7 @@
 plugins {
     id 'com.gradleup.shadow' version '9.3.1' apply false
+    id("io.github.sgtsilvio.gradle.maven-central-publishing") version "0.5.0" apply false
+    id("io.github.sgtsilvio.gradle.metadata") version "0.7.0" apply false
 }
 
 allprojects {
@@ -13,13 +15,17 @@ allprojects {
 
 subprojects {
     apply plugin: "java-library"
-    apply plugin: "maven-publish"
+    apply plugin: "io.github.sgtsilvio.gradle.maven-central-publishing"
+    apply plugin: "io.github.sgtsilvio.gradle.metadata"
     apply plugin: "signing"
 
     java {
         toolchain {
             languageVersion = JavaLanguageVersion.of(8)
+            languageVersion = JavaLanguageVersion.of(8)
         }
+        withSourcesJar()
+        withJavadocJar()
         withSourcesJar()
         withJavadocJar()
     }
@@ -43,8 +49,8 @@ subprojects {
                     url = "https://github.com/projectAccounth/MinecraftGLWrapper"
                     licenses {
                         license {
-                            name = 'The Apache License, Version 2.0'
-                            url = 'http://apache.org'
+                            name = 'GNU LGPLv3'
+                            url = 'http://www.gnu.org/licenses'
                         }
                     }
                     developers {
@@ -58,17 +64,6 @@ subprojects {
                         developerConnection = "scm:git:ssh://://github.com/projectAccounth/MinecraftGLWrapper.git"
                         url = "https://github.com/projectAccounth/MinecraftGLWrapper"
                     }
-                }
-            }
-        }
-
-        repositories {
-            maven {
-                name = "CentralPortal"
-                url = layout.buildDirectory.dir("staging")
-                credentials {
-                    username = System.getenv("SONATYPE_USERNAME")
-                    password = System.getenv("SONATYPE_PASSWORD")
                 }
             }
         }

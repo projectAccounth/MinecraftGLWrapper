@@ -33,11 +33,3 @@ jobs:
         path: |
           core/build/libs/*.jar
           joml/build/libs/*.jar
-
-    - name: Upload to Maven Central
-      uses: sonatype/central-publisher-portal-action@v1
-      with:
-        username: ${{ secrets.SONATYPE_USERNAME }}
-        password: ${{ secrets.SONATYPE_PASSWORD }}
-        deployment-name: ${{ github.event.repository.name }}-${{ github.run_number }}
-        directory: .
