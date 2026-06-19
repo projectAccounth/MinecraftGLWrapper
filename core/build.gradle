@@ -1,12 +1,34 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
     id 'java'
 }
 
+String lwjglNatives = "natives-windows"
+if (OperatingSystem.current().isMacOsX()) {
+    lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
+} else if (OperatingSystem.current().isLinux()) {
+    lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-linux-arm64" : "natives-linux"
+}
+
+
 dependencies {
-    compileOnly("org.joml:joml:1.10.5");
-    compileOnly("org.lwjgl:lwjgl:3.3.2");
-    compileOnly("org.lwjgl:lwjgl-opengl:3.3.2");
-    compileOnly("commons-io:commons-io:2.18.0");
+    compileOnly "org.joml:joml:1.10.5"
+    compileOnly "org.lwjgl:lwjgl-glfw:3.3.2"
+    compileOnly "org.lwjgl:lwjgl-opengl:3.3.2"
+
+    testRuntimeOnly "org.lwjgl:lwjgl:3.3.2"
+    testRuntimeOnly "org.lwjgl:lwjgl-glfw:3.3.2"
+    testRuntimeOnly "org.lwjgl:lwjgl-opengl:3.3.2"
+
+    testRuntimeOnly "org.lwjgl:lwjgl:3.3.2:${lwjglNatives}"
+    testRuntimeOnly "org.lwjgl:lwjgl-glfw:3.3.2:${lwjglNatives}"
+    testRuntimeOnly "org.lwjgl:lwjgl-opengl:3.3.2:${lwjglNatives}"
+
+    compileOnly "commons-io:commons-io:2.18.0"
+    compileOnly 'com.google.guava:guava:33.3.1-jre'
+
+    testImplementation sourceSets.main.output
 }
 
 java {
@@ -14,10 +36,43 @@ java {
     withJavadocJar()
 }
 
+sourceSets {
+    main {
+    }
+    test {
+    }
+}
+
+configurations {
+    testImplementation.extendsFrom(implementation)
+    testCompileOnly.extendsFrom(compileOnly)
+    testImplementation.extendsFrom(compileOnly)
+}
+
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
             artifactId = "opengl-grl"
         }
+    }
+}
+
+jar {
+    exclude '**/test/**' 
+    from sourceSets.main.output
+}
+
+tasks.register('testEngine', JavaExec) {
+    group = 'verification'
+    
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'net.not_thefirst.gl_sys_test.Client'
+
+    workingDir = projectDir
+    workingDir = file('src/test/resources') 
+
+    if (OperatingSystem.current().isMacOsX()) {
+        jvmArgs '-XstartOnFirstThread'
     }
 }

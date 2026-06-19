@@ -2,37 +2,40 @@ package net.not_thefirst.lib.gl_render_system.mesh;
 
 import java.util.Arrays;
 
+import org.lwjgl.opengl.GL11;
+
+import net.not_thefirst.lib.gl_render_system.mesh.utils.GLPrimitive;
 import net.not_thefirst.lib.gl_render_system.vertex.VertexFormat;
 
 public final class IndexedBuildingMesh extends BuildingMesh {
 
-    private int[] indices;
-    private int indexCount;
+    private int[] vertexTracker;
+    private int trackerCount;
 
     private final IndexPattern pattern;
     private int vertsInPrimitive;
 
     public IndexedBuildingMesh(
         VertexFormat format,
-        int mode,
-        IndexPattern pattern
+        GLPrimitive primitive
     ) {
-        super(format, mode);
-        this.pattern = pattern;
-        this.indices = new int[1024];
+        super(format, primitive);
+        this.pattern = IndexPattern.fromType(primitive);
+        this.vertexTracker = new int[1024];
         this.vertsInPrimitive = 0;
+        this.trackerCount = 0;
     }
 
-    private void ensureIndexCapacity(int additional) {
-        int required = indexCount + additional;
-        if (required <= indices.length)
+    private void ensureTrackerCapacity(int additional) {
+        int required = trackerCount + additional;
+        if (required <= vertexTracker.length)
             return;
 
-        int newCapacity = indices.length;
+        int newCapacity = vertexTracker.length;
         while (newCapacity < required) {
             newCapacity = newCapacity + (newCapacity >> 1);
         }
-        indices = Arrays.copyOf(indices, newCapacity);
+        vertexTracker = Arrays.copyOf(vertexTracker, newCapacity);
     }
 
     @Override
@@ -42,12 +45,11 @@ public final class IndexedBuildingMesh extends BuildingMesh {
         vertsInPrimitive++;
 
         if (vertsInPrimitive == pattern.verticesPerPrimitive()) {
-            int base =
-                vertexCount() - pattern.verticesPerPrimitive();
+            int base = vertexCount() - pattern.verticesPerPrimitive();
 
-            ensureIndexCapacity(pattern.indicesPerPrimitive());
-            pattern.emit(base, indices, indexCount);
-            indexCount += pattern.indicesPerPrimitive();
+            ensureTrackerCapacity(pattern.indicesPerPrimitive());
+            pattern.emit(base, vertexTracker, trackerCount);
+            trackerCount += pattern.indicesPerPrimitive();
 
             vertsInPrimitive = 0;
         }
@@ -71,10 +73,11 @@ public final class IndexedBuildingMesh extends BuildingMesh {
             base.normals(),
             base.uvs(),
             base.colors(),
-            Arrays.copyOf(indices, indexCount),
+            primitive.getIndexArray(),
+            pattern.indsPerPrim,
             base.vertexCount(),
             base.format(),
-            base.mode()
+            base.primitive()
         );
     }
 
@@ -96,9 +99,9 @@ public final class IndexedBuildingMesh extends BuildingMesh {
                 out[o + 1] = base + 1;
                 out[o + 2] = base + 2;
 
-                out[o + 3] = base;
-                out[o + 4] = base + 2;
-                out[o + 5] = base + 3;
+                out[o + 3] = base + 2;
+                out[o + 4] = base + 3;
+                out[o + 5] = base;
             }
         },
 
@@ -107,6 +110,18 @@ public final class IndexedBuildingMesh extends BuildingMesh {
             public void emit(int base, int[] out, int o) {
                 out[o]     = base;
                 out[o + 1] = base + 1;
+            }
+        },
+
+        TEST(6, 6) {
+            @Override
+            public void emit(int base, int[] out, int o) {
+                out[o]     = base;
+                out[o + 1] = base + 1;
+                out[o + 2] = base + 2;
+                out[o + 3] = base + 3;
+                out[o + 4] = base + 4;
+                out[o + 5] = base + 5;
             }
         };
 
@@ -126,7 +141,25 @@ public final class IndexedBuildingMesh extends BuildingMesh {
             return indsPerPrim;
         }
 
+        public static IndexPattern fromGL(int glEnum) {
+            switch (glEnum) {
+                case GL11.GL_LINES: return LINES;
+                case GL11.GL_TRIANGLES: return TRIANGLES;
+                case GL11.GL_QUADS: return QUADS;
+                default: throw new IllegalArgumentException("Non-primitive passed");
+            }
+        }
+
+        public static IndexPattern fromType(GLPrimitive primitive) {
+            switch (primitive) {
+                case LINES: return LINES;
+                case TRIANGLES: return TRIANGLES;
+                case QUADS: return QUADS;
+                case TEST: return TEST;
+                default: throw new IllegalArgumentException("Unknown passed");
+            }
+        }
+
         public abstract void emit(int baseVertex, int[] out, int offset);
     }
 }
-

@@ -2,6 +2,7 @@ package net.not_thefirst.lib.gl_render_system.mesh;
 
 import java.util.ArrayDeque;
 
+import net.not_thefirst.lib.gl_render_system.mesh.utils.GLPrimitive;
 import net.not_thefirst.lib.gl_render_system.vertex.VertexFormat;
 
 public final class MeshPool {
@@ -9,11 +10,11 @@ public final class MeshPool {
     private final ArrayDeque<BuildingMesh> pool = new ArrayDeque<>();
 
     private final VertexFormat format;
-    private final int mode;
+    private final GLPrimitive primitive;
 
-    MeshPool(VertexFormat format, int mode) {
+    MeshPool(VertexFormat format, GLPrimitive primitive) {
         this.format = format;
-        this.mode = mode;
+        this.primitive = primitive;
     }
 
     public BuildingMesh acquire() {
@@ -22,7 +23,7 @@ public final class MeshPool {
             buildingMesh.reset();
             return buildingMesh;
         }
-        return new BuildingMesh(format, mode);
+        return new BuildingMesh(format, primitive);
     }
 
     public void release(BuildingMesh buildingMesh) {

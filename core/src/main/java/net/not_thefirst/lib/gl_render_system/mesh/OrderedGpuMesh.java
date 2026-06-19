@@ -3,6 +3,7 @@ package net.not_thefirst.lib.gl_render_system.mesh;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
+import net.not_thefirst.lib.gl_render_system.mesh.utils.GLPrimitive;
 import net.not_thefirst.lib.gl_render_system.vertex.VertexFormat;
 
 public final class OrderedGpuMesh extends AbstractGpuMesh {
@@ -13,16 +14,16 @@ public final class OrderedGpuMesh extends AbstractGpuMesh {
         int vao,
         int vbo,
         int vertexCount,
-        int drawMode,
+        GLPrimitive primitive,
         VertexFormat format
     ) {
-        super(vao, vbo, drawMode, format);
+        super(vao, vbo, primitive, format);
         this.vertexCount = vertexCount;
     }
 
     @Override
     public void draw() {
         GL30.glBindVertexArray(vao);
-        GL11.glDrawArrays(drawMode, 0, vertexCount);
+        GL11.glDrawArrays(primitive.getGLConst(), 0, vertexCount);
     }
 }

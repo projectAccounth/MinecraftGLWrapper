@@ -2,6 +2,7 @@ package net.not_thefirst.lib.gl_render_system.mesh;
 
 import java.util.Arrays;
 
+import net.not_thefirst.lib.gl_render_system.mesh.utils.GLPrimitive;
 import net.not_thefirst.lib.gl_render_system.vertex.VertexFormat;
 import net.not_thefirst.lib.utils.math.ARGB;
 
@@ -18,11 +19,11 @@ public class BuildingMesh {
     private boolean vertexOpen = false;
 
     private final VertexFormat format;
-    private final int mode;
+    protected final GLPrimitive primitive;
 
-    public BuildingMesh(VertexFormat format, int mode) {
+    public BuildingMesh(VertexFormat format, GLPrimitive primitive) {
         this.format = format;
-        this.mode = mode;
+        this.primitive = primitive;
 
         this.capacity = 1024;
 
@@ -138,7 +139,7 @@ public class BuildingMesh {
             finalColors,
             count,
             format,
-            mode
+            primitive
         );
     }
 }

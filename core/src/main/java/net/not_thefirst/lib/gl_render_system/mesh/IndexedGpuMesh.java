@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 
+import net.not_thefirst.lib.gl_render_system.mesh.utils.GLPrimitive;
 import net.not_thefirst.lib.gl_render_system.vertex.VertexFormat;
 
 public final class IndexedGpuMesh extends AbstractGpuMesh {
@@ -18,19 +19,20 @@ public final class IndexedGpuMesh extends AbstractGpuMesh {
         int ebo,
         int indexCount,
         int indexType,
-        int drawMode,
+        GLPrimitive primitive,
         VertexFormat format
     ) {
-        super(vao, vbo, drawMode, format);
+        super(vao, vbo, primitive, format);
         this.ebo = ebo;
         this.indexCount = indexCount;
         this.indexType = indexType;
     }
 
+    // render pass handles the clean up
     @Override
     public void draw() {
         GL30.glBindVertexArray(vao);
-        GL11.glDrawElements(drawMode, indexCount, indexType, 0);
+        GL11.glDrawElements(primitive.getGLConst(), indexCount, indexType, 0);
     }
 
     @Override

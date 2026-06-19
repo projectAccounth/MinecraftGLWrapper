@@ -2,6 +2,7 @@ package net.not_thefirst.lib.gl_render_system.mesh;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -52,7 +53,7 @@ public final class MeshUploader {
             vao,
             vbo,
             vertexCount,
-            mesh.mode(),
+            mesh.primitive(),
             format
         );
     }
@@ -82,10 +83,8 @@ public final class MeshUploader {
 
         vertexBuffer.flip();
 
-        IntBuffer indexBuffer =
-            BufferUtils.createIntBuffer(indexCount);
-        indexBuffer.put(mesh.indices());
-        indexBuffer.flip();
+        IntBuffer indexBuffer = IntBuffer.wrap(mesh.indices());
+        System.out.println(Arrays.toString(mesh.indices()));
 
         int vao = GL30.glGenVertexArrays();
         int vbo = GL15.glGenBuffers();
@@ -110,7 +109,6 @@ public final class MeshUploader {
         format.enable();
 
         GL30.glBindVertexArray(0);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
         return new IndexedGpuMesh(
             vao,
@@ -118,7 +116,7 @@ public final class MeshUploader {
             ebo,
             indexCount,
             GL11.GL_UNSIGNED_INT,
-            mesh.mode(),
+            mesh.primitive(),
             format
         );
     }

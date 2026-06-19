@@ -8,7 +8,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL31;
-
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 public final class GLProgram implements AutoCloseable {
@@ -105,6 +105,16 @@ public final class GLProgram implements AutoCloseable {
             mat.get(fb);
             fb.flip();
             GL20.glUniformMatrix4fv(loc, false, fb);
+        }
+    }
+
+    public void setMat3(String name, Matrix3f mat) {
+        int loc = uniform(name);
+        if (loc >= 0) {
+            FloatBuffer fb = BufferUtils.createFloatBuffer(9);
+            mat.get(fb);
+            fb.flip();
+            GL20.glUniformMatrix3fv(loc, false, fb);
         }
     }
 

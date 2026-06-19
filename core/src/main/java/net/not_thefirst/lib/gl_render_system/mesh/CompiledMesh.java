@@ -1,5 +1,6 @@
 package net.not_thefirst.lib.gl_render_system.mesh;
 
+import net.not_thefirst.lib.gl_render_system.mesh.utils.GLPrimitive;
 import net.not_thefirst.lib.gl_render_system.vertex.VertexFormat;
 
 public class CompiledMesh {
@@ -10,7 +11,7 @@ public class CompiledMesh {
     final int vertexCount;
 
     final VertexFormat format;
-    final int mode;
+    final GLPrimitive primitive;
 
     CompiledMesh(
         float[] positions,
@@ -19,7 +20,7 @@ public class CompiledMesh {
         int[] colors,
         int vertexCount,
         VertexFormat format,
-        int mode
+        GLPrimitive primitive
     ) {
         this.positions = positions;
         this.normals = normals;
@@ -27,10 +28,10 @@ public class CompiledMesh {
         this.colors = colors;
         this.vertexCount = vertexCount;
         this.format = format;
-        this.mode = mode;
+        this.primitive = primitive;
     }
 
-    public int mode() { return this.mode; }
+    public GLPrimitive primitive() { return this.primitive; }
     public VertexFormat format() { return this.format; }
     public float[] positions() { return this.positions; }
     public float[] normals() { return this.normals; }

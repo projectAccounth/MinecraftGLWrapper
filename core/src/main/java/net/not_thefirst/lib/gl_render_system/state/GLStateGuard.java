@@ -30,6 +30,8 @@ public final class GLStateGuard implements AutoCloseable {
     private final int arrayBuffer;
     private final int elementArrayBuffer;
     private final int frameBuffer;
+    private final int drawFrameBuffer;
+    private final int readFrameBuffer;
 
     private final boolean depthTest;
     private final int depthFunc;
@@ -86,11 +88,13 @@ public final class GLStateGuard implements AutoCloseable {
         blendSrcAlpha = GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA);
         blendDstAlpha = GL11.glGetInteger(GL14.GL_BLEND_DST_ALPHA);
 
+        int[] writeMask = new int[4];
+        GL11.glGetIntegerv(GL11.GL_COLOR_WRITEMASK, writeMask);
         // Color mask
-        colorR = GL11.glGetBoolean(GL11.GL_COLOR_WRITEMASK);
-        colorG = GL11.glGetBoolean(GL11.GL_COLOR_WRITEMASK + 1);
-        colorB = GL11.glGetBoolean(GL11.GL_COLOR_WRITEMASK + 2);
-        colorA = GL11.glGetBoolean(GL11.GL_COLOR_WRITEMASK + 3);
+        colorR = writeMask[0] > 0;
+        colorG = writeMask[1] > 0;
+        colorB = writeMask[2] > 0;
+        colorA = writeMask[3] > 0;
 
         // Viewport
         GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
@@ -105,7 +109,9 @@ public final class GLStateGuard implements AutoCloseable {
         boundTexture2D = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D);
         samplerBinding = GL11.glGetInteger(GL33.GL_SAMPLER_BINDING);
 
-        frameBuffer = GL11.glGetInteger(GL30.GL_FRAMEBUFFER);
+        frameBuffer = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
+        drawFrameBuffer = GL11.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING);
+        readFrameBuffer = GL11.glGetInteger(GL30.GL_READ_FRAMEBUFFER_BINDING);
     }
 
     @Override
@@ -155,6 +161,10 @@ public final class GLStateGuard implements AutoCloseable {
         GL13.glActiveTexture(activeTexture);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, boundTexture2D);
         GL33.glBindSampler(0, samplerBinding);
+
+        GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, frameBuffer);
+        GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, readFrameBuffer);
+        GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, drawFrameBuffer);
     }
 
     private static void set(int cap, boolean enabled) {
