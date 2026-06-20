@@ -26,5 +26,5 @@ void main() {
     TexCoords = vertices[gl_VertexID] * 0.5 + 0.5;
     vertexColor = Color;
 
-    gl_Position = vec4(vertices[gl_VertexID], 0.0, 1.0);
+    gl_Position = ProjMat * ViewModelMat * vec4(Position, 1.0f); vec4(vertices[gl_VertexID], 0.0, 1.0);
 }

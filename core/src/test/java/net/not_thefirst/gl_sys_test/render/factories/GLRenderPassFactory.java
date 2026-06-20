@@ -1,7 +1,7 @@
 package net.not_thefirst.gl_sys_test.render.factories;
 
-import net.not_thefirst.gl_sys_test.render.passes.GLPipeline;
-import net.not_thefirst.gl_sys_test.render.passes.GLRenderPass;
+import net.not_thefirst.gl_sys_test.render.gl.GLPipeline;
+import net.not_thefirst.gl_sys_test.render.gl.GLRenderPass;
 import net.not_thefirst.lib.gl_render_system.alt.AbstractPipeline;
 import net.not_thefirst.lib.gl_render_system.alt.PipelineManager.RenderPassFactory;
 

@@ -34,8 +34,6 @@ public final class MeshUploader {
             format.putVertex(buffer, i, mesh, offX, offY, offZ);
         }
 
-        System.out.println(totalBytes + " " + vertexCount);
-
         buffer.flip();
 
         int vao = GL30.glGenVertexArrays();

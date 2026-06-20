@@ -1,4 +1,4 @@
-package net.not_thefirst.gl_sys_test.render.passes;
+package net.not_thefirst.gl_sys_test.render.gl;
 
 import java.util.List;
 import java.util.Map;
@@ -9,6 +9,7 @@ import net.not_thefirst.lib.gl_render_system.shader.GLProgram;
 import net.not_thefirst.lib.gl_render_system.state.BlendState;
 import net.not_thefirst.lib.gl_render_system.state.CullState;
 import net.not_thefirst.lib.gl_render_system.state.DepthTestState;
+import net.not_thefirst.lib.gl_render_system.state.FaceCullState;
 import net.not_thefirst.lib.gl_render_system.state.MaskState;
 import net.not_thefirst.lib.gl_render_system.state.RenderStateBuilder;
 import net.not_thefirst.lib.gl_render_system.state.ShaderRenderType;
@@ -31,13 +32,14 @@ public class GLPipeline extends AbstractPipeline {
         final CullState cullState,
         final MaskState maskState,
         final DepthTestState depthTestState,
+        final FaceCullState faceCullState,
         
         final String vertexShader,
         final String fragmentShader,
         final String id,
         final VertexFormat vertexFormat
     ) {
-        super(name, uniforms, uniformBlocks, textures, textureArrays, blendState, cullState, maskState, depthTestState, vertexShader, fragmentShader, id, vertexFormat);
+        super(name, uniforms, uniformBlocks, textures, textureArrays, blendState, cullState, maskState, depthTestState, faceCullState, vertexShader, fragmentShader, id, vertexFormat);
 
         if (id == null) {
             throw new IllegalArgumentException("Invalid pipeline ID: " + id);
@@ -67,6 +69,7 @@ public class GLPipeline extends AbstractPipeline {
                 .cull(cullState)
                 .mask(maskState)
                 .depthTest(depthTestState)
+                .cullFace(faceCullState)
                 .build()
         );
     }
@@ -104,6 +107,7 @@ public class GLPipeline extends AbstractPipeline {
                 cullState, 
                 maskState, 
                 depthTestState,
+                faceCullState,
                 vertexShader,
                 fragmentShader,
                 id,

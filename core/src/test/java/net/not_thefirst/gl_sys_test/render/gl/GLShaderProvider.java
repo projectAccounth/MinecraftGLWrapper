@@ -1,4 +1,4 @@
-package net.not_thefirst.gl_sys_test.render.passes;
+package net.not_thefirst.gl_sys_test.render.gl;
 
 import java.io.InputStream;
 

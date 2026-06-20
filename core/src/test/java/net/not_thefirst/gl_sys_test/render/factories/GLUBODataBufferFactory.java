@@ -1,6 +1,6 @@
 package net.not_thefirst.gl_sys_test.render.factories;
 
-import net.not_thefirst.gl_sys_test.render.passes.GLUBODataBuffer;
+import net.not_thefirst.gl_sys_test.render.gl.GLUBODataBuffer;
 import net.not_thefirst.lib.gl_render_system.alt.PipelineManager.DataBufferFactory;
 
 import java.nio.ByteBuffer;

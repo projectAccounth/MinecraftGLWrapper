@@ -1,6 +1,7 @@
 package net.not_thefirst.gl_sys_test;
 
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL11;
 
@@ -13,12 +14,13 @@ import net.not_thefirst.gl_sys_test.renderer.pipelines.GLPipelines;
 import net.not_thefirst.gl_sys_test.resources.ResourceManager;
 import net.not_thefirst.gl_sys_test.utils.Initializer;
 import net.not_thefirst.gl_sys_test.window.WindowContext;
-import net.not_thefirst.lib.utils.math.ARGB;
 
 public class Client {
     private static int windowWidth = 800;
     private static int windowHeight = 600;
     private static boolean windowResized = false;
+
+    private static GLFWFramebufferSizeCallback fbCallback; 
 
     private static MainRenderer renderer;
     private static ResourceManager resourceManager;
@@ -52,8 +54,14 @@ public class Client {
         Initializer.get().run();
         
         Camera camera = renderer.getCamera();
-        System.out.println(camera.getFront() + " " + camera.getPosition());
         MovementController controller = new MovementController();
+
+        fbCallback = GLFWFramebufferSizeCallback.create((windowId, width, height) -> {
+            windowWidth = width;
+            windowHeight = height;
+            windowResized = true;
+        });
+        GLFW.glfwSetFramebufferSizeCallback(window, fbCallback);
 
         GLFW.glfwSetWindowSizeCallback(window, new GLFWWindowSizeCallback() {
             @Override
@@ -77,15 +85,16 @@ public class Client {
                 windowResized = false;
             }
 
-            renderer.getCurrentContext().clearColor(ARGB.WHITE);
-            renderer.getCurrentContext().clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
-            context.update();
+            context.pollEvents();
 
             controller.update(window, camera, deltaTime);
+
+            renderer.clearFrame();
             renderer.renderScene();
-            
+
             InputHandler.postUpdate();
+            context.swapBuffers();
+            context.postFrame();
         }
 
         context.destroy();

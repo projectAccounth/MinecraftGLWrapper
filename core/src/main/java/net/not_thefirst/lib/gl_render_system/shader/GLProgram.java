@@ -16,12 +16,14 @@ public final class GLProgram implements AutoCloseable {
     private final int programId;
     private final Map<String, Integer> uniformLocations = new HashMap<>();
     private boolean inUse = false;
+    private boolean closed = false;
 
     public GLProgram(int programId) {
         this.programId = programId;
     }
 
     public void use() {
+        assertClosed();
         if (!inUse) {
             GL20.glUseProgram(programId);
             inUse = true;
@@ -29,16 +31,22 @@ public final class GLProgram implements AutoCloseable {
     }
 
     public void stop() {
+        assertClosed();
         if (inUse) {
             GL20.glUseProgram(0);
             inUse = false;
         }
     }
 
+    private void assertClosed() {
+        if (closed) throw new IllegalStateException("Attempted to use a closed program");
+    }
+
     @Override
     public void close() {
         stop();
         GL20.glDeleteProgram(programId);
+        closed = true;
     }
 
     public int getId() {

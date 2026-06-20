@@ -8,7 +8,7 @@ public class Camera {
     private int screenHeight;
     private float fov = 70.00f;
 
-    private final Vector3f position = new Vector3f(0.0f, 0.0f, 3.0f);
+    private final Vector3f position = new Vector3f(0.0f, 0.0f, 5.0f);
     private final Vector3f front = new Vector3f(0.0f, 0.0f, -1.0f);
     private final Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
     

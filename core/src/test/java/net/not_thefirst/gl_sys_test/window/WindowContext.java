@@ -70,17 +70,25 @@ public class WindowContext {
                 }
             }
         }, 0L);
-        
-        GLFW.glfwSwapInterval(10);
+        GLFW.glfwMakeContextCurrent(windowHandle);
+        GLFW.glfwSwapInterval(1);
+        GLFW.glfwShowWindow(windowHandle);
     }
 
     public boolean shouldClose() {
         return GLFW.glfwWindowShouldClose(windowHandle);
     }
 
-    public void update() {
+    public void swapBuffers() {
         GLFW.glfwSwapBuffers(windowHandle);
+    }
+
+    public void pollEvents() {
         GLFW.glfwPollEvents();
+    }
+
+    public void postFrame() {
+        // ..
     }
 
     public void destroy() {

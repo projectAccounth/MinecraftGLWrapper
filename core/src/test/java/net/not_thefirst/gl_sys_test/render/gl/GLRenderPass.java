@@ -1,4 +1,4 @@
-package net.not_thefirst.gl_sys_test.render.passes;
+package net.not_thefirst.gl_sys_test.render.gl;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -70,7 +70,7 @@ public class GLRenderPass extends AbstractRenderPass<GLPipeline> {
     @Override
     public void cleanup() {
         super.cleanup();
-        // stateGuard.close();
+        stateGuard.close();
     }
 
     private void bindUniforms(GLPipeline pipeline) {
@@ -119,7 +119,7 @@ public class GLRenderPass extends AbstractRenderPass<GLPipeline> {
                 break;
             }
             case MAT4 : program.setMat4(name, new Matrix4f().set((float[]) value.value())); break;
-            case MAT3 : program.setMat3(name, new Matrix3f().set((float[]) value.value()));
+            case MAT3 : program.setMat3(name, new Matrix3f().set((float[]) value.value())); break;
             default : throw new IllegalArgumentException("Unknown uniform type: " + value.type());
         }
     }

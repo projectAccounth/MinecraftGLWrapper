@@ -9,6 +9,7 @@ public final class RenderStateBuilder {
     private BlendState blend = BlendState.NONE;
     private CullState cull = CullState.CULL;
     private MaskState mask = MaskState.COLOR_DEPTH;
+    private FaceCullState faceCullState = FaceCullState.BACK;
 
     private List<RenderState> extras = new ArrayList<>();
 
@@ -32,6 +33,11 @@ public final class RenderStateBuilder {
         return this;
     }
 
+    public RenderStateBuilder cullFace(FaceCullState state) {
+        this.faceCullState = state;
+        return this;
+    }
+
     public RenderStateBuilder addCustom(RenderState state) {
         this.extras.add(state);
         return this;
@@ -43,6 +49,7 @@ public final class RenderStateBuilder {
         all.add(blend);
         all.add(cull);
         all.add(mask);
+        all.add(faceCullState);
         return new CompositeRenderState(
             all.toArray(new RenderState[0])
         );

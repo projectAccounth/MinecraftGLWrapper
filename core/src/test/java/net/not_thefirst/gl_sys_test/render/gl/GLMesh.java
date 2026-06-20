@@ -1,11 +1,10 @@
-package net.not_thefirst.gl_sys_test.render.passes;
+package net.not_thefirst.gl_sys_test.render.gl;
 
 import net.not_thefirst.lib.gl_render_system.alt.AbstractStaticMesh;
 import net.not_thefirst.lib.gl_render_system.alt.RenderParams;
 import net.not_thefirst.lib.gl_render_system.mesh.GpuMesh;
 import net.not_thefirst.lib.gl_render_system.mesh.IndexedBuildingMesh;
 import net.not_thefirst.lib.gl_render_system.mesh.IndexedCompiledMesh;
-import net.not_thefirst.lib.gl_render_system.mesh.IndexedGpuMesh;
 import net.not_thefirst.lib.gl_render_system.mesh.MeshUploader;
 import net.not_thefirst.lib.gl_render_system.mesh.utils.GLPrimitive;
 import net.not_thefirst.lib.gl_render_system.vertex.VertexFormat;
@@ -98,7 +97,7 @@ public class GLMesh extends AbstractStaticMesh<GpuMesh, GLRenderPass> {
         @Override
         public GLMesh build() {
             IndexedCompiledMesh compiled = buildingMesh.compile();
-            IndexedGpuMesh uploaded = MeshUploader.uploadIndexed(compiled);
+            GpuMesh uploaded = MeshUploader.uploadIndexed(compiled);
 
             return new GLMesh(
                 uploaded, 

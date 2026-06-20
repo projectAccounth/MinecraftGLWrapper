@@ -6,7 +6,7 @@ import net.not_thefirst.gl_sys_test.Client;
 import net.not_thefirst.gl_sys_test.camera.Camera;
 import net.not_thefirst.gl_sys_test.render.factories.GLRenderPassFactory;
 import net.not_thefirst.gl_sys_test.render.factories.GLUBODataBufferFactory;
-import net.not_thefirst.gl_sys_test.render.passes.GLResourceHandler;
+import net.not_thefirst.gl_sys_test.render.gl.GLResourceHandler;
 import net.not_thefirst.gl_sys_test.resources.ResourceManager;
 import net.not_thefirst.gl_sys_test.utils.Initializer;
 import net.not_thefirst.gl_sys_test.utils.TaskRunner;
@@ -15,6 +15,7 @@ import net.not_thefirst.lib.gl_render_system.alt.PipelineManager.PipelineProvide
 import net.not_thefirst.lib.gl_render_system.frame.GLDepthFramebuffer;
 import net.not_thefirst.lib.gl_render_system.frame.GLScreenBuffer;
 import net.not_thefirst.lib.gl_render_system.target.GLRenderTarget;
+import net.not_thefirst.lib.utils.math.ARGB;
 
 public class MainRenderer implements IRenderer {
 
@@ -26,7 +27,7 @@ public class MainRenderer implements IRenderer {
     
     private GLGraphicsContext graphicsContext;
 
-    // currently stripped
+    // currently unused
     private GLDepthFramebuffer depthPassBuffer;
     private GLScreenBuffer screenBuffer;
 
@@ -39,16 +40,6 @@ public class MainRenderer implements IRenderer {
         this.graphicsContext = new GLGraphicsContext();
         this.depthPassBuffer = new GLDepthFramebuffer(initialWidth, initialHeight);
         this.screenBuffer    = new GLScreenBuffer(initialWidth, initialHeight);
-
-        Initializer.get().registerTask("null", () -> {
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            GL11.glEnable(GL11.GL_CULL_FACE);
-
-            PipelineManager manager = PipelineManager.getInstance();
-
-            manager.registerDataBufferFactory(PipelineProvider.DEFAULT, GLUBODataBufferFactory::new);
-            manager.registerRenderPassFactory(PipelineProvider.DEFAULT, GLRenderPassFactory::new);
-        });
     }
 
     public void addPreFrameTask(String name, Runnable task) {
@@ -59,14 +50,16 @@ public class MainRenderer implements IRenderer {
         postFrameTasks.registerTask(name, task);
     }
 
+    public void clearFrame() {
+        graphicsContext.clearColor(ARGB.BLACK);
+        graphicsContext.clear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+    }
+
     @Override
     public void renderScene() {
         preFrameTasks.run();
 
-        graphicsContext.beginTarget(screenBuffer);
         graphicsContext.processPasses();
-        graphicsContext.endTarget(screenBuffer);
-
         graphicsContext.flushPasses();
 
         postFrameTasks.run();

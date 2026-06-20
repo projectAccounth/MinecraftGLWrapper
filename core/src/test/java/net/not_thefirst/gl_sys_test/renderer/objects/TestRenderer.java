@@ -2,8 +2,8 @@ package net.not_thefirst.gl_sys_test.renderer.objects;
 
 import net.not_thefirst.gl_sys_test.Client;
 import net.not_thefirst.gl_sys_test.camera.Camera;
-import net.not_thefirst.gl_sys_test.render.passes.GLMesh;
-import net.not_thefirst.gl_sys_test.render.passes.GLRenderPass;
+import net.not_thefirst.gl_sys_test.render.gl.GLMesh;
+import net.not_thefirst.gl_sys_test.render.gl.GLRenderPass;
 import net.not_thefirst.gl_sys_test.renderer.GLGraphicsContext;
 import net.not_thefirst.gl_sys_test.renderer.MainRenderer;
 import net.not_thefirst.gl_sys_test.renderer.pipelines.GLPipelines;
@@ -33,9 +33,9 @@ public class TestRenderer {
         AbstractStaticMesh.Builder<?, ?> builder = 
             new GLMesh.Builder(
                 VertexFormat.POSITION_COLOR, 
-                GLPrimitive.TRIANGLES);
+                GLPrimitive.QUADS);
 
-        float s = 1;
+        float s = 2;
 
         builder.addVertex(0, 0, s).setColor(faceColor1);
         builder.addVertex(s, 0, s).setColor(faceColor1);
@@ -78,7 +78,7 @@ public class TestRenderer {
                     PipelineManager.getInstance().createDataBuffer("Transforms", bufSize);
                 Camera cam = Client.getMainRenderer().getCamera();
 
-                pass = new GLRenderPass("test", GLPipelines.UNNAMED);
+                pass = new GLRenderPass("test", GLPipelines.UNNAMED_ND, GLPipelines.UNNAMED);
                 pass.setMesh(mesh, mesh.getIndexCount());
 
                 buf.putMat4(cam.getProjectionMatrix());
