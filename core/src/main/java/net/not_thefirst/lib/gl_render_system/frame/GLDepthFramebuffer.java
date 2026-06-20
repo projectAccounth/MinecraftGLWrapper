@@ -7,9 +7,6 @@ import static org.lwjgl.opengl.GL30.*;
 
 import net.not_thefirst.lib.gl_render_system.target.GLRenderTarget;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL30.*;
-
 public class GLDepthFramebuffer implements GLRenderTarget {
     private final int fboId;
     private final int depthTextureId;
