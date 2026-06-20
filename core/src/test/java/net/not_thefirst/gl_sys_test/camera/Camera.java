@@ -12,7 +12,6 @@ public class Camera {
     private final Vector3f front = new Vector3f(0.0f, 0.0f, -1.0f);
     private final Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
     
-    // Auxiliary vectors kept as fields to prevent garbage collection allocations in the render loop
     private final Vector3f right = new Vector3f();
     private final Vector3f worldUp = new Vector3f(0.0f, 1.0f, 0.0f);
 
@@ -36,13 +35,10 @@ public class Camera {
     private final Matrix4f projMatrix = new Matrix4f();
     private final float[] projBuffer = new float[16];
 
-    /**
-     * Generates a 3D Perspective Projection Matrix flattened into a 16-element float array.
-     */
     public float[] getProjectionMatrixArray() {
         float aspectRatio = (float) screenWidth / (float) screenHeight;
-        float zNear = 0.05f; // Minecraft style near plane clipping
-        float zFar = 1000.0f; // Far plane view distance boundary
+        float zNear = 0.05f;
+        float zFar = 1000.0f;
 
         projMatrix.identity().perspective((float) Math.toRadians(fov), aspectRatio, zNear, zFar);
         return projMatrix.get(projBuffer);
@@ -57,7 +53,6 @@ public class Camera {
     }
 
     public void updateVectors() {
-        // Calculate direction vector from angles
         float radYaw = (float) Math.toRadians(yaw);
         float radPitch = (float) Math.toRadians(pitch);
 
@@ -66,20 +61,16 @@ public class Camera {
         front.z = (float) (Math.sin(radYaw) * Math.cos(radPitch));
         front.normalize();
 
-        // Re-calculate Right and Up vectors using JOML cross products
         front.cross(worldUp, right).normalize();
         right.cross(front, up).normalize();
     }
 
-    /**
-     * Generates a LookAt matrix and flattens it directly into a 16-element float array.
-     */
     public float[] getViewMatrixArray() {
         // target position = current position + look direction vector
         Vector3f target = new Vector3f(position).add(front);
         
         viewMatrix.identity().lookAt(position, target, up);
-        return viewMatrix.get(matrixBuffer); // Pours values directly into the flat array buffer
+        return viewMatrix.get(matrixBuffer);
     }
 
     public void moveRelative(float dx, float dy, float dz) {

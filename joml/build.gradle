@@ -25,6 +25,10 @@ publishing {
         mavenJava(MavenPublication) {
             artifact(tasks.shadowJar);
             artifactId = "opengl-grl-joml"
+
+            pom {
+                name = "opengl-wrapper-joml"
+            }
         }
     }
 }

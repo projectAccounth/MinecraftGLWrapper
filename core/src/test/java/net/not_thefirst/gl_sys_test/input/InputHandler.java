@@ -14,7 +14,6 @@ public class InputHandler {
     private static boolean firstMouse = true;
 
     public static void init(long windowHandle) {
-        // Keyboard tracking
         GLFW.glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
             if (key >= 0 && key < keys.length) {
                 boolean isPressed = (action != GLFW.GLFW_RELEASE);
@@ -23,7 +22,6 @@ public class InputHandler {
             }
         });
 
-        // Mouse button tracking
         GLFW.glfwSetMouseButtonCallback(windowHandle, (window, button, action, mods) -> {
             if (button >= 0 && button < mouseButtons.length) {
                 mouseButtons[button] = (action != GLFW.GLFW_RELEASE);
