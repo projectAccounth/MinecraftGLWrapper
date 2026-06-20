@@ -1,13 +1,12 @@
 package net.not_thefirst.lib.gl_render_system.vertex;
 
-import net.not_thefirst.lib.gl_render_system.mesh.BuildingMesh;
-import net.not_thefirst.lib.utils.math.ARGB;
+import net.not_thefirst.lib.gl_render_system.alt.AbstractStaticMesh;
 
 public class GLVertexBuilder {
 
     private GLVertexBuilder() {}
     
-    public static void quad(BuildingMesh bb, float x0, float y0, float z0,
+    public static void quad(AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
         float x1, float y1, float z1, float x2, float y2, float z2,
         float x3, float y3, float z3, float r, float g, float b, float a) {
         
@@ -17,11 +16,13 @@ public class GLVertexBuilder {
         bb.addVertex(x3, y3, z3).setColor(r, g, b, a);
     }
 
-    public static void triangle(BuildingMesh bb, float x0, float y0, float z0,
+    public static void triangle(AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
         float x1, float y1, float z1, float x2, float y2, float z2,
         float r, float g, float b, float a) {
 
-        quad(bb, x0, y0, z0, x1, y1, z1, x2, y2, z2, x2, y2, z2, r, g, b, a);
+        bb.addVertex(x0, y0, z0).setColor(r, g, b, a);
+        bb.addVertex(x1, y1, z1).setColor(r, g, b, a);
+        bb.addVertex(x2, y2, z2).setColor(r, g, b, a);
     }
 
     public static int[] decomposeARGB(int color) {
@@ -40,7 +41,7 @@ public class GLVertexBuilder {
         return new int[]{r, g, b, a};
     }
 
-    public static void quadColored(BuildingMesh bb, float x0, float y0, float z0,
+    public static void quadColored(AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
         float x1, float y1, float z1, float x2, float y2, float z2,
         float x3, float y3, float z3, int c0, int c1, int c2, int c3) {
 
@@ -50,13 +51,15 @@ public class GLVertexBuilder {
         bb.addVertex(x3, y3, z3).setColor(c3);
     }
 
-    public static void triangleColored(BuildingMesh bb, float x0, float y0, float z0,
+    public static void triangleColored(AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
         float x1, float y1, float z1, float x2, float y2, float z2,
         int c0, int c1, int c2) {
-        quadColored(bb, x0, y0, z0, x1, y1, z1, x2, y2, z2, x2, y2, z2, c0, c1, c2, c2);
+        bb.addVertex(x0, y0, z0).setColor(c0);
+        bb.addVertex(x1, y1, z1).setColor(c1);
+        bb.addVertex(x2, y2, z2).setColor(c2);
     }
 
-    public static void quadNormal(BuildingMesh bb, float x0, float y0, float z0,
+    public static void quadNormal(AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
         float x1, float y1, float z1, float x2, float y2, float z2,
         float x3, float y3, float z3, int c0, int c1, int c2, int c3) {
         float[][] normals = computeNormals(x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3);
@@ -71,10 +74,19 @@ public class GLVertexBuilder {
         }
     }
 
-    public static void triangleNormal(BuildingMesh bb, float x0, float y0, float z0,
+    public static void triangleNormal(AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
         float x1, float y1, float z1, float x2, float y2, float z2,
         int c0, int c1, int c2) {
-        quadNormal(bb, x0, y0, z0, x1, y1, z1, x2, y2, z2, x2, y2, z2, c0, c1, c2, c2);
+        float[][] normals = computeNormals(x0, y0, z0, x1, y1, z1, x2, y2, z2);
+
+        for (int i = 0; i < 3; i++) {
+            float[] pos = getVertexPosition(i, x0, y0, z0, x1, y1, z1, x2, y2, z2, x2, y2, z2);
+            int color = getVertexColor(i, c0, c1, c2, c2);
+            bb.addVertex(pos[0], pos[1], pos[2])
+                .setNormal(normals[i][0], normals[i][1], normals[i][2])
+                .setColor(color)
+                ;
+        }
     }
 
     private static float[] getVertexPosition(int index, float x0, float y0, float z0,
@@ -133,6 +145,35 @@ public class GLVertexBuilder {
         };
     }
 
+    private static float[][] computeNormals(
+        float x0, float y0, float z0,
+        float x1, float y1, float z1,
+        float x2, float y2, float z2
+    ) {
+        float[][] edges = computeEdges(x0, y0, z0, x1, y1, z1, x2, y2, z2);
+        float[][] normals = new float[3][3];
+
+        for (int i = 0; i < 3; i++) {
+            float[] n = crossProduct(edges[i * 2], edges[i * 2 + 1]);
+            normalize(n);
+            normals[i] = n;
+        }
+        return normals;
+    }
+
+    private static float[][] computeEdges(
+        float x0, float y0, float z0,
+        float x1, float y1, float z1,
+        float x2, float y2, float z2
+    ) {
+        return new float[][] {
+            {x1 - x0, y1 - y0, z1 - z0}, {x2 - x0, y2 - y0, z2 - z0}, 
+            {x2 - x1, y2 - y1, z2 - z1}, {x0 - x1, y0 - y1, z0 - z1}, 
+            {x0 - x2, y0 - y2, z0 - z2}, {x1 - x2, y1 - y2, z1 - z2}
+        };
+    }
+
+
     private static float[] crossProduct(float[] a, float[] b) {
         return new float[]{
             a[1] * b[2] - a[2] * b[1],
@@ -150,23 +191,29 @@ public class GLVertexBuilder {
         }
     }
 
-    public static void quad(BuildingMesh bb, float x0, float y0, float z0,
+    public static void quad(AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
         float x1, float y1, float z1, float x2, float y2, float z2,
-        float x3, float y3, float z3, int layer, float relY, int skyColor) {
+        float x3, float y3, float z3, int color) {
         quadNormal(
             bb,
             x0, y0, z0,
             x1, y1, z1,
             x2, y2, z2,
             x3, y3, z3,
-            ARGB.WHITE, ARGB.WHITE, ARGB.WHITE, ARGB.WHITE
+            color, color, color, color
         );
     }
 
-    public static void triangle(BuildingMesh bb, float x0, float y0, float z0,
+    public static void triangle(AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
         float x1, float y1, float z1, float x2, float y2, float z2,
-        int layer, float relY, int skyColor) {
+        int color) {
 
-        quad(bb, x0, y0, z0, x1, y1, z1, x2, y2, z2, x2, y2, z2, layer, relY, skyColor);
+        triangleNormal(
+            bb,
+            x0, y0, z0,
+            x1, y1, z1,
+            x2, y2, z2,
+            color, color, color
+        );
     }
 }
