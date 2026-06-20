@@ -33,6 +33,7 @@ public final class IndexedGpuMesh extends AbstractGpuMesh {
     public void draw() {
         GL30.glBindVertexArray(vao);
         GL11.glDrawElements(primitive.getGLConst(), indexCount, indexType, 0);
+        GL30.glBindVertexArray(0);
     }
 
     @Override

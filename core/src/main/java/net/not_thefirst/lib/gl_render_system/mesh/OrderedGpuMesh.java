@@ -25,5 +25,6 @@ public final class OrderedGpuMesh extends AbstractGpuMesh {
     public void draw() {
         GL30.glBindVertexArray(vao);
         GL11.glDrawArrays(primitive.getGLConst(), 0, vertexCount);
+        GL30.glBindVertexArray(0);
     }
 }

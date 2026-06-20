@@ -83,8 +83,9 @@ public final class MeshUploader {
 
         vertexBuffer.flip();
 
-        IntBuffer indexBuffer = IntBuffer.wrap(mesh.indices());
-        System.out.println(Arrays.toString(mesh.indices()));
+        IntBuffer indexBuffer = IntBuffer.allocate(mesh.indexCount());
+        indexBuffer.put(mesh.indices());
+        indexBuffer.flip();
 
         int vao = GL30.glGenVertexArrays();
         int vbo = GL15.glGenBuffers();
@@ -109,6 +110,7 @@ public final class MeshUploader {
         format.enable();
 
         GL30.glBindVertexArray(0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
 
         return new IndexedGpuMesh(
             vao,

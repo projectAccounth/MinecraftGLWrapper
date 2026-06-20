@@ -8,17 +8,17 @@ import net.not_thefirst.lib.utils.math.ARGB;
 
 public class BuildingMesh {
 
-    private float[] positions;
-    private float[] normals;
-    private float[] uvs;
-    private int[] colors;
+    protected float[] positions;
+    protected float[] normals;
+    protected float[] uvs;
+    protected int[] colors;
 
-    private int capacity;
-    private int currentIndex;
+    protected int capacity;
+    protected int currentIndex;
 
     private boolean vertexOpen = false;
 
-    private final VertexFormat format;
+    protected final VertexFormat format;
     protected final GLPrimitive primitive;
 
     public BuildingMesh(VertexFormat format, GLPrimitive primitive) {
@@ -51,7 +51,7 @@ public class BuildingMesh {
         capacity = newCapacity;
     }
 
-    private void beginVert() {
+    protected void beginVert() {
         if (vertexOpen) {
             currentIndex++;
             vertexOpen = false;
