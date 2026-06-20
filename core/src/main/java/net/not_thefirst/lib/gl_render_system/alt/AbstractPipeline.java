@@ -9,6 +9,7 @@ import net.not_thefirst.lib.gl_render_system.alt.PipelineManager.DepthBufferImpl
 import net.not_thefirst.lib.gl_render_system.state.BlendState;
 import net.not_thefirst.lib.gl_render_system.state.CullState;
 import net.not_thefirst.lib.gl_render_system.state.DepthTestState;
+import net.not_thefirst.lib.gl_render_system.state.FaceCullState;
 import net.not_thefirst.lib.gl_render_system.state.MaskState;
 import net.not_thefirst.lib.gl_render_system.vertex.VertexFormat;
 
@@ -25,6 +26,7 @@ public abstract class AbstractPipeline {
     protected final CullState cullState;
     protected final MaskState maskState;
     protected final DepthTestState depthTestState;
+    protected final FaceCullState faceCullState;
 
     protected final String vertexShader;
     protected final String fragmentShader;
@@ -44,6 +46,7 @@ public abstract class AbstractPipeline {
         final CullState cullState,
         final MaskState maskState,
         final DepthTestState depthTestState,
+        final FaceCullState faceCullState,
 
         final String vertexShader,
         final String fragmentShader,
@@ -61,6 +64,7 @@ public abstract class AbstractPipeline {
         this.depthTestState = depthTestState;
         this.vertexShader = vertexShader;
         this.fragmentShader = fragmentShader;
+        this.faceCullState = faceCullState;
         this.id = id;
         this.vertexFormat = vertexFormat;
     }
@@ -162,6 +166,7 @@ public abstract class AbstractPipeline {
         protected String fragmentShader;
         protected String id;
         protected VertexFormat vertexFormat;
+        protected FaceCullState faceCullState;
 
         public Builder(String name) {
             this.name = name;
@@ -172,6 +177,7 @@ public abstract class AbstractPipeline {
 
             cullState = CullState.CULL;
             maskState = MaskState.COLOR_DEPTH;
+            faceCullState = FaceCullState.BACK;
             depthTestState = 
                 PipelineManager.getSetDepthBufferImplType() == DepthBufferImplType.STANDARD ? 
                     DepthTestState.LEQUAL : DepthTestState.GEQUAL;
@@ -191,6 +197,11 @@ public abstract class AbstractPipeline {
 
         public Builder<T> withUniformBlocks(Map<String, Integer> uniformBlocks) {
             this.uniformBlocks = uniformBlocks;
+            return this;
+        }
+
+        public Builder<T> withFaceCull(FaceCullState state) {
+            this.faceCullState = state;
             return this;
         }
 

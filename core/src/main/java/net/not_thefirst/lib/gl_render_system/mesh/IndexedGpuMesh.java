@@ -28,10 +28,10 @@ public final class IndexedGpuMesh extends AbstractGpuMesh {
         this.indexType = indexType;
     }
 
-    // render pass handles the clean up
     @Override
     public void draw() {
         GL30.glBindVertexArray(vao);
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
         GL11.glDrawElements(primitive.getGLConst(), indexCount, indexType, 0);
         GL30.glBindVertexArray(0);
     }

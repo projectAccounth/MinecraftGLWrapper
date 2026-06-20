@@ -2,7 +2,6 @@ package net.not_thefirst.lib.gl_render_system.mesh;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -34,6 +33,8 @@ public final class MeshUploader {
         for (int i = 0; i < vertexCount; i++) {
             format.putVertex(buffer, i, mesh, offX, offY, offZ);
         }
+
+        System.out.println(totalBytes + " " + vertexCount);
 
         buffer.flip();
 
@@ -69,23 +70,21 @@ public final class MeshUploader {
         float offX, float offY, float offZ
     ) {
         VertexFormat format = mesh.format();
-
         int vertexCount = mesh.vertexCount();
-        int indexCount  = mesh.indexCount();
 
         int stride = format.strideBytes();
-        ByteBuffer vertexBuffer =
-            BufferUtils.createByteBuffer(vertexCount * stride);
+        int totalBytes = vertexCount * stride;
+
+        ByteBuffer buffer = BufferUtils.createByteBuffer(totalBytes);
 
         for (int i = 0; i < vertexCount; i++) {
-            format.putVertex(vertexBuffer, i, mesh, offX, offY, offZ);
+            format.putVertex(buffer, i, mesh, offX, offY, offZ);
         }
 
-        vertexBuffer.flip();
+        buffer.flip();
 
-        IntBuffer indexBuffer = IntBuffer.allocate(mesh.indexCount());
-        indexBuffer.put(mesh.indices());
-        indexBuffer.flip();
+        IntBuffer indexBuffer = BufferUtils.createIntBuffer(mesh.indices().length);
+        indexBuffer.put(mesh.indices()).flip();
 
         int vao = GL30.glGenVertexArrays();
         int vbo = GL15.glGenBuffers();
@@ -94,20 +93,12 @@ public final class MeshUploader {
         GL30.glBindVertexArray(vao);
 
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
-        GL15.glBufferData(
-            GL15.GL_ARRAY_BUFFER,
-            vertexBuffer,
-            GL15.GL_STATIC_DRAW
-        );
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+        
+        format.enable();
 
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
-        GL15.glBufferData(
-            GL15.GL_ELEMENT_ARRAY_BUFFER,
-            indexBuffer,
-            GL15.GL_STATIC_DRAW
-        );
-
-        format.enable();
+        GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL15.GL_STATIC_DRAW);
 
         GL30.glBindVertexArray(0);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
@@ -116,7 +107,7 @@ public final class MeshUploader {
             vao,
             vbo,
             ebo,
-            indexCount,
+            mesh.indices().length,
             GL11.GL_UNSIGNED_INT,
             mesh.primitive(),
             format

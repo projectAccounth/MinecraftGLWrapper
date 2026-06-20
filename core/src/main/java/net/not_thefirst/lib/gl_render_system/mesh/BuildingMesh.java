@@ -16,7 +16,7 @@ public class BuildingMesh {
     protected int capacity;
     protected int currentIndex;
 
-    private boolean vertexOpen = false;
+    protected boolean vertexOpen = false;
 
     protected final VertexFormat format;
     protected final GLPrimitive primitive;
@@ -51,7 +51,7 @@ public class BuildingMesh {
         capacity = newCapacity;
     }
 
-    protected void beginVert() {
+    protected void endLastVertex() {
         if (vertexOpen) {
             currentIndex++;
             vertexOpen = false;
@@ -59,7 +59,7 @@ public class BuildingMesh {
     }
 
     public BuildingMesh addVertex(float x, float y, float z) {
-        beginVert();
+        endLastVertex();
         ensureCapacity(1);
 
         int p = currentIndex * 3;
@@ -105,7 +105,7 @@ public class BuildingMesh {
     }
 
     public BuildingMesh endVertex() {
-        beginVert();
+        endLastVertex();
         return this;
     }
 
@@ -123,7 +123,7 @@ public class BuildingMesh {
     }
 
     public CompiledMesh compile() {
-        beginVert();
+        endLastVertex();
 
         int count = currentIndex;
 

@@ -65,5 +65,5 @@ public enum GLPrimitive {
         }
     }
     public int getGLConst() { return glConst; }
-    public int[] getIndexArray() { return indexArray; }
+    public int[] getSequentialIndexArray() { return indexArray; }
 }
