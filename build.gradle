@@ -44,7 +44,6 @@ subprojects {
                 version project.version
 
                 pom {
-                    name = project.name
                     description = "Library"
                     url = "https://github.com/projectAccounth/MinecraftGLWrapper"
                     licenses {
