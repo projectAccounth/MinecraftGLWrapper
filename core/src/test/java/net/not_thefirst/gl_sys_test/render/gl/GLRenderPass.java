@@ -27,6 +27,7 @@ public class GLRenderPass extends AbstractRenderPass<GLPipeline> {
         new HashMap<>();
 
     private GLStateGuard stateGuard;
+    private GLMesh meshData;
 
     public GLRenderPass(String name, GLPipeline... pipelines) {
         super(name, pipelines);
@@ -39,16 +40,18 @@ public class GLRenderPass extends AbstractRenderPass<GLPipeline> {
     }
 
     @Override
-    public void setMesh(AbstractStaticMesh<?, ?> mesh, int indexCount) {
+    public void setMesh(AbstractStaticMesh<?> mesh, int indexCount) {
         if (mesh == null) {
             throw new IllegalArgumentException("Mesh cannot be null");
         }
-        this.meshData = mesh;
+        if (!(mesh instanceof GLMesh)) {
+            throw new IllegalArgumentException("Mesh must be a GLMesh instance");
+        }
+        this.meshData = (GLMesh) mesh;
     }
 
     public void validateBeforeRender() {
-        if (!(this.meshData instanceof GLMesh)) 
-            throw new IllegalStateException("Attempted to use invalid mesh type for GLRenderPass");
+        //
     }
 
     @Override
@@ -61,7 +64,7 @@ public class GLRenderPass extends AbstractRenderPass<GLPipeline> {
             bindPipelineUBOs(pipeline);
             bindUniforms(pipeline);
 
-            ((GLMesh) this.meshData).draw(this, new RenderParams());
+            this.meshData.draw(this, new RenderParams());
 
             pipeline.unbind();
         }

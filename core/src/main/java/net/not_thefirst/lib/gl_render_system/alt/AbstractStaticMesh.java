@@ -3,16 +3,13 @@ package net.not_thefirst.lib.gl_render_system.alt;
 import net.not_thefirst.lib.gl_render_system.mesh.utils.GLPrimitive;
 import net.not_thefirst.lib.gl_render_system.vertex.VertexFormat;
 
-public abstract class AbstractStaticMesh<T, P extends AbstractRenderPass<?>> implements AutoCloseable {
-    protected final T meshData;
+public abstract class AbstractStaticMesh<P extends AbstractRenderPass<?>> implements AutoCloseable {
     protected final GLPrimitive primitive;
     protected final VertexFormat format;
 
     protected AbstractStaticMesh(
-        final T meshData, 
         final GLPrimitive primitive,
         final VertexFormat format) {
-        this.meshData = meshData;
         this.primitive = primitive;
         this.format = format;
     }
@@ -24,15 +21,10 @@ public abstract class AbstractStaticMesh<T, P extends AbstractRenderPass<?>> imp
     public int getIndexCount() {
         return this.primitive.indicesPerPrimitive();
     }
-
-    public T getMesh() {
-        return this.meshData;
-    }
-
     @Override
     public abstract void close();
 
-    public static interface Builder<B extends Builder<B, R>, R> {
+    public static interface Builder<B extends Builder<B, R>, R extends AbstractStaticMesh<?>> {
         B addVertex(float x, float y, float z);
         /**
          * Sets the color of the latest vertex. Values are passed in the range of [0, 256), in the format of RGBA.

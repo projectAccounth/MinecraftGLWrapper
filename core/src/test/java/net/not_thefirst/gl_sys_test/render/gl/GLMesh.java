@@ -10,10 +10,13 @@ import net.not_thefirst.lib.gl_render_system.mesh.utils.GLPrimitive;
 import net.not_thefirst.lib.gl_render_system.vertex.VertexFormat;
 import net.not_thefirst.lib.utils.math.ARGB;
 
-public class GLMesh extends AbstractStaticMesh<GpuMesh, GLRenderPass> {
+public class GLMesh extends AbstractStaticMesh<GLRenderPass> {
+
+    private GpuMesh meshData;
 
     protected GLMesh(GpuMesh meshData, GLPrimitive prim, VertexFormat format) {
-        super(meshData, prim, format);
+        super(prim, format);
+        this.meshData = meshData;
 
     }
 

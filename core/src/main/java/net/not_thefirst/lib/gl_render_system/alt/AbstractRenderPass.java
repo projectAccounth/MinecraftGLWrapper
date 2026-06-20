@@ -9,7 +9,7 @@ public abstract class AbstractRenderPass<T extends AbstractPipeline> implements 
     protected final String name;
     protected final List<T> pipelines;
     protected final Map<String, UniformValue> uniforms = new HashMap<>();
-    protected AbstractStaticMesh<?, ?> meshData;
+    protected AbstractStaticMesh<?> meshData;
     protected int indexCount;
     protected boolean indexed;
 
@@ -46,7 +46,7 @@ public abstract class AbstractRenderPass<T extends AbstractPipeline> implements 
         }
     }
 
-    public abstract void setMesh(AbstractStaticMesh<?, ?> mesh, int indexCount);
+    public abstract void setMesh(AbstractStaticMesh<?> mesh, int indexCount);
     public void setIndexed(boolean indexed) {
         this.indexed = indexed;
     }
@@ -59,7 +59,7 @@ public abstract class AbstractRenderPass<T extends AbstractPipeline> implements 
         return !open;
     }
 
-    public AbstractStaticMesh<?, ?> getMesh() {
+    public AbstractStaticMesh<?> getMesh() {
         return meshData;
     }
 
