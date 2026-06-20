@@ -216,4 +216,28 @@ public class GLVertexBuilder {
             color, color, color
         );
     }
+
+    public static void triangleDegenerate(
+        AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
+        float x1, float y1, float z1, float x2, float y2, float z2,
+        float r, float g, float b, float a) 
+    {
+        quad(bb, x0, y0, z0, x1, y1, z1, x2, y2, z2, x2, y2, z2, r, g, b, a);
+    }
+
+    public static void triangleDegenerate(
+        AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
+        float x1, float y1, float z1, float x2, float y2, float z2,
+        int rgba) 
+    {
+        quad(bb, x0, y0, z0, x1, y1, z1, x2, y2, z2, x2, y2, z2, rgba);
+    }
+
+    public static void triangleDegenerate(
+        AbstractStaticMesh.Builder<?, ?> bb, float x0, float y0, float z0,
+        float x1, float y1, float z1, float x2, float y2, float z2,
+        int rgba0, int rgba1, int rgba2) 
+    {
+        quadNormal(bb, x0, y0, z0, x1, y1, z1, x2, y2, z2, x2, y2, z2, rgba0, rgba1, rgba2, rgba2);
+    }
 }
