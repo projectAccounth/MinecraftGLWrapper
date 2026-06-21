@@ -4,14 +4,9 @@ import org.lwjgl.opengl.GL11;
 
 import net.not_thefirst.gl_sys_test.Client;
 import net.not_thefirst.gl_sys_test.camera.Camera;
-import net.not_thefirst.gl_sys_test.render.factories.GLRenderPassFactory;
-import net.not_thefirst.gl_sys_test.render.factories.GLUBODataBufferFactory;
 import net.not_thefirst.gl_sys_test.render.gl.GLResourceHandler;
 import net.not_thefirst.gl_sys_test.resources.ResourceManager;
-import net.not_thefirst.gl_sys_test.utils.Initializer;
 import net.not_thefirst.gl_sys_test.utils.TaskRunner;
-import net.not_thefirst.lib.gl_render_system.alt.PipelineManager;
-import net.not_thefirst.lib.gl_render_system.alt.PipelineManager.PipelineProvider;
 import net.not_thefirst.lib.gl_render_system.frame.GLDepthFramebuffer;
 import net.not_thefirst.lib.gl_render_system.frame.GLScreenBuffer;
 import net.not_thefirst.lib.gl_render_system.target.GLRenderTarget;

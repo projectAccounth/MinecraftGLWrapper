@@ -53,6 +53,10 @@ public final class GLProgram implements AutoCloseable {
         return programId;
     }
 
+    public int id() {
+        return getId();
+    }
+
     public int uniform(String name) {
         Integer cached = uniformLocations.get(name);
         if (cached != null) {

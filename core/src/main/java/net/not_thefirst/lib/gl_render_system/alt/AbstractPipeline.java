@@ -152,6 +152,8 @@ public abstract class AbstractPipeline {
                 '}';
     }
 
+    public abstract void cleanup();
+
     public static class Builder<T extends AbstractPipeline> {
         protected String name;
         protected List<String> uniforms;
@@ -196,7 +198,19 @@ public abstract class AbstractPipeline {
         }
 
         public Builder<T> withUniformBlocks(Map<String, Integer> uniformBlocks) {
-            this.uniformBlocks = uniformBlocks;
+            this.uniformBlocks.putAll(uniformBlocks);
+            return this;
+        }
+
+        public Builder<T> withUniformBlock(
+            String name,
+            int binding
+        ) {
+            uniformBlocks.put(
+                name,
+                binding
+            );
+
             return this;
         }
 

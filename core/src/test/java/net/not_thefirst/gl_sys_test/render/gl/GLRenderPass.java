@@ -22,12 +22,7 @@ public class GLRenderPass extends AbstractRenderPass<GLPipeline> {
     private final Map<String, ByteBuffer> uniformBlocks =
         new HashMap<>();
 
-    private final Map<GLPipeline,
-                  Map<String, UniformBufferObject>> pipelineUbos =
-        new HashMap<>();
-
     private GLStateGuard stateGuard;
-    private GLMesh meshData;
 
     public GLRenderPass(String name, GLPipeline... pipelines) {
         super(name, pipelines);
@@ -47,24 +42,30 @@ public class GLRenderPass extends AbstractRenderPass<GLPipeline> {
         if (!(mesh instanceof GLMesh)) {
             throw new IllegalArgumentException("Mesh must be a GLMesh instance");
         }
-        this.meshData = (GLMesh) mesh;
+        this.meshData = mesh;
     }
 
     public void validateBeforeRender() {
-        //
+        if (pipelines.isEmpty())
+            throw new IllegalStateException("Rendering pass with no pipelines, pass name: " + name);
     }
 
     @Override
     public void render() {
         super.render();
+
         validateBeforeRender();
+
         for (GLPipeline pipeline : pipelines) {
             pipeline.bind();
 
-            bindPipelineUBOs(pipeline);
+            uploadUniformBlocks(pipeline);
             bindUniforms(pipeline);
 
-            this.meshData.draw(this, new RenderParams());
+            ((GLMesh) meshData).draw(
+                this,
+                new RenderParams()
+            );
 
             pipeline.unbind();
         }
@@ -127,34 +128,36 @@ public class GLRenderPass extends AbstractRenderPass<GLPipeline> {
         }
     }
 
-    private void bindPipelineUBOs(GLPipeline pipeline) {
-        Map<String, UniformBufferObject> ubos =
-            pipelineUbos.computeIfAbsent(
-                pipeline,
-                p -> new HashMap<>()
-            );
+    private void uploadUniformBlocks(
+        GLPipeline pipeline
+    ) {
 
-        for (Entry<String, ByteBuffer> entry : uniformBlocks.entrySet()) {
-            String name = entry.getKey();
-            ByteBuffer data = entry.getValue();
+        for (Entry<String, ByteBuffer> entry :
+                uniformBlocks.entrySet()) {
 
-            Integer slot =
-                pipeline.getUniformBlocks().get(name);
+            UniformBufferObject ubo =
+                pipeline.getUbos()
+                        .get(entry.getKey());
 
-            if (slot == null) {
+            if (ubo == null) {
                 continue;
             }
 
-            UniformBufferObject ubo =
-                ubos.computeIfAbsent(
-                    name,
-                    n -> new UniformBufferObject(
-                        slot,
-                        data.limit()
-                    )
-                );
+            ByteBuffer data = entry.getValue();
 
-            ubo.bind();
+            if (data.remaining() != ubo.size()) {
+
+                throw new IllegalStateException(
+                    "UBO size mismatch for block '" +
+                    entry.getKey() +
+                    "' (shader=" +
+                    ubo.size() +
+                    ", buffer=" +
+                    data.remaining() +
+                    ")"
+                );
+            }
+
             ubo.update(data);
         }
     }

@@ -1,11 +1,16 @@
 package net.not_thefirst.gl_sys_test.render.gl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Map.Entry;
+
+import org.lwjgl.opengl.GL31;
 
 import net.not_thefirst.lib.gl_render_system.alt.AbstractPipeline;
 import net.not_thefirst.lib.gl_render_system.shader.GLProgram;
+import net.not_thefirst.lib.gl_render_system.shader.UniformBufferObject;
 import net.not_thefirst.lib.gl_render_system.state.BlendState;
 import net.not_thefirst.lib.gl_render_system.state.CullState;
 import net.not_thefirst.lib.gl_render_system.state.DepthTestState;
@@ -20,10 +25,13 @@ public class GLPipeline extends AbstractPipeline {
 
     private ShaderRenderType renderType;
 
-    public GLPipeline(
-        final String name, 
+    private final Map<String, UniformBufferObject> ubos =
+        new HashMap<>();
 
-        final List<String> uniforms, 
+    public GLPipeline(
+        final String name,
+
+        final List<String> uniforms,
         final Map<String, Integer> uniformBlocks,
         final List<String> textures,
         final List<String> textureArrays,
@@ -33,36 +41,111 @@ public class GLPipeline extends AbstractPipeline {
         final MaskState maskState,
         final DepthTestState depthTestState,
         final FaceCullState faceCullState,
-        
+
         final String vertexShader,
         final String fragmentShader,
         final String id,
         final VertexFormat vertexFormat
     ) {
-        super(name, uniforms, uniformBlocks, textures, textureArrays, blendState, cullState, maskState, depthTestState, faceCullState, vertexShader, fragmentShader, id, vertexFormat);
+        super(
+            name,
+            uniforms,
+            uniformBlocks,
+            textures,
+            textureArrays,
+            blendState,
+            cullState,
+            maskState,
+            depthTestState,
+            faceCullState,
+            vertexShader,
+            fragmentShader,
+            id,
+            vertexFormat
+        );
 
-        if (id == null) {
-            throw new IllegalArgumentException("Invalid pipeline ID: " + id);
-        }
-        if (vertexShader == null) {
-            throw new IllegalArgumentException("Invalid vertex shader ID: " + vertexShader);
-        }
-        if (fragmentShader == null) {
-            throw new IllegalArgumentException("Invalid fragment shader ID: " + fragmentShader);
+        Objects.requireNonNull(id, "Pipeline id");
+        Objects.requireNonNull(vertexShader, "Vertex shader");
+        Objects.requireNonNull(fragmentShader, "Fragment shader");
+    }
+
+    public Map<String, UniformBufferObject> getUbos() {
+        return ubos;
+    }
+
+    private static int align16(int value) {
+        return (value + 15) & ~15;
+    }
+
+    private void createUniformBuffers(GLProgram program) {
+
+        for (Entry<String, Integer> entry :
+                uniformBlocks.entrySet()) {
+
+            String blockName = entry.getKey();
+            int binding = entry.getValue();
+
+            int blockIndex =
+                GL31.glGetUniformBlockIndex(
+                    program.id(),
+                    blockName
+                );
+
+            if (blockIndex == GL31.GL_INVALID_INDEX) {
+                throw new IllegalStateException(
+                    "Uniform block '" +
+                    blockName +
+                    "' not found in shader '" +
+                    id +
+                    "'"
+                );
+            }
+
+            int blockSize =
+                GL31.glGetActiveUniformBlocki(
+                    program.id(),
+                    blockIndex,
+                    GL31.GL_UNIFORM_BLOCK_DATA_SIZE
+                );
+
+            int alignedSize =
+                align16(blockSize);
+
+            program.bindUniformBlock(
+                blockName,
+                binding
+            );
+
+            ubos.put(
+                blockName,
+                new UniformBufferObject(
+                    binding,
+                    alignedSize
+                )
+            );
         }
     }
 
     @Override
     public void setup() {
-        GLResourceHandler.getProgramManager().register(id, vertexShader, fragmentShader);
-        GLProgram program = GLResourceHandler.getProgramManager().get(id);
 
-        for (Entry<String, Integer> entry : uniformBlocks.entrySet()) {
-            program.bindUniformBlock(entry.getKey(), entry.getValue().intValue());
-        }
+        GLResourceHandler
+            .getProgramManager()
+            .register(
+                id,
+                vertexShader,
+                fragmentShader
+            );
+
+        GLProgram program =
+            GLResourceHandler
+                .getProgramManager()
+                .get(id);
+
+        createUniformBuffers(program);
 
         renderType = new ShaderRenderType(
-            name, 
+            name,
             new ShaderState(program),
             new RenderStateBuilder()
                 .blend(blendState)
@@ -75,22 +158,30 @@ public class GLPipeline extends AbstractPipeline {
     }
 
     public GLProgram getProgram() {
-        return this.renderType.program();
+        return renderType.program();
     }
 
     @Override
     public void bind() {
-        this.renderType.setup();
+        renderType.setup();
         getProgram().use();
     }
 
     @Override
     public void unbind() {
         getProgram().stop();
-        this.renderType.clear();
+        renderType.clear();
     }
- 
-    public static class Builder extends AbstractPipeline.Builder<GLPipeline> {
+
+    @Override
+    public void cleanup() {
+        ubos.values().forEach(UniformBufferObject::close);
+        ubos.clear();
+    }
+
+    public static class Builder
+            extends AbstractPipeline.Builder<GLPipeline> {
+
         public Builder(String name) {
             super(name);
         }
@@ -98,14 +189,14 @@ public class GLPipeline extends AbstractPipeline {
         @Override
         public GLPipeline build() {
             return new GLPipeline(
-                name, 
-                uniforms, 
-                uniformBlocks, 
-                textures, 
-                textureArrays, 
-                blendState, 
-                cullState, 
-                maskState, 
+                name,
+                uniforms,
+                uniformBlocks,
+                textures,
+                textureArrays,
+                blendState,
+                cullState,
+                maskState,
                 depthTestState,
                 faceCullState,
                 vertexShader,
