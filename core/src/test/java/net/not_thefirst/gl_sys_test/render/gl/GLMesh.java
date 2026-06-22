@@ -13,10 +13,12 @@ import net.not_thefirst.lib.utils.math.ARGB;
 public class GLMesh extends AbstractStaticMesh<GLRenderPass> {
 
     private GpuMesh meshData;
+    private int vertexCount;
 
-    protected GLMesh(GpuMesh meshData, GLPrimitive prim, VertexFormat format) {
+    protected GLMesh(GpuMesh meshData, GLPrimitive prim, VertexFormat format, int vertexCount) {
         super(prim, format);
         this.meshData = meshData;
+        this.vertexCount = vertexCount;
 
     }
 
@@ -33,6 +35,11 @@ public class GLMesh extends AbstractStaticMesh<GLRenderPass> {
     @Override
     public void cleanup(final GLRenderPass pass) {
         //
+    }
+
+    @Override
+    public int getVertexCount() {
+        return vertexCount;
     }
 
     @Override
@@ -105,7 +112,8 @@ public class GLMesh extends AbstractStaticMesh<GLRenderPass> {
             return new GLMesh(
                 uploaded, 
                 this.primitive,
-                format);
+                format,
+                compiled.vertexCount());
         }
     }
 }

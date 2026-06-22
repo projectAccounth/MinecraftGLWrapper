@@ -19,6 +19,7 @@ import net.not_thefirst.lib.utils.math.ARGB;
 public class TestRenderer {
     private static GLMesh mesh = null;
     private static GLRenderPass pass;
+    private static AbstractUBODataBuffer<?, ?> buf;
 
     static int faceColor1 = ARGB.colorFromFloat(1, 0.5f, 0.5f, 0.5f);
     static int faceColor2 = ARGB.colorFromFloat(1, 0.6f, 0.5f, 0.5f);
@@ -70,12 +71,13 @@ public class TestRenderer {
         mesh = (GLMesh) builder.build();
 
         int bufSize = new Std140SizeCalculator().addMat4().addMat4().finish().offset();
+            
 
         Initializer.get().registerTask("bind", () -> {
             MainRenderer renderer = Client.getMainRenderer();
+            buf = PipelineManager.getInstance().createDataBuffer("Transforms", bufSize);
             renderer.addPreFrameTask("push pass", () -> {
-                AbstractUBODataBuffer<?, ?> buf = 
-                    PipelineManager.getInstance().createDataBuffer("Transforms", bufSize);
+                
                 Camera cam = Client.getMainRenderer().getCamera();
 
                 pass = new GLRenderPass("test", GLPipelines.UNNAMED_ND, GLPipelines.UNNAMED);
@@ -92,6 +94,7 @@ public class TestRenderer {
 
             renderer.addPostFrameTask("nuke pass", () -> {
                 pass.close();
+                buf.reset();
             });
         });
     }

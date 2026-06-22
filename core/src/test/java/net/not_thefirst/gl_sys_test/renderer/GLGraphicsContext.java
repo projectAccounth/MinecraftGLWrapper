@@ -5,12 +5,7 @@ import static org.lwjgl.opengl.GL11.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.not_thefirst.gl_sys_test.render.factories.GLRenderPassFactory;
-import net.not_thefirst.gl_sys_test.render.factories.GLUBODataBufferFactory;
 import net.not_thefirst.gl_sys_test.render.gl.GLRenderPass;
-import net.not_thefirst.gl_sys_test.utils.Initializer;
-import net.not_thefirst.lib.gl_render_system.alt.PipelineManager;
-import net.not_thefirst.lib.gl_render_system.alt.PipelineManager.PipelineProvider;
 import net.not_thefirst.lib.gl_render_system.target.GLRenderTarget;
 import net.not_thefirst.lib.utils.math.ARGB;
 
@@ -18,12 +13,7 @@ public class GLGraphicsContext {
     private List<GLRenderPass> passes = new ArrayList<>();
 
     GLGraphicsContext() {
-        Initializer.get().registerTask("null", () -> {
-            PipelineManager manager = PipelineManager.getInstance();
-
-            manager.registerDataBufferFactory(PipelineProvider.DEFAULT, GLUBODataBufferFactory::new);
-            manager.registerRenderPassFactory(PipelineProvider.DEFAULT, GLRenderPassFactory::new);
-        });
+        //
     }
 
     void beginTarget(GLRenderTarget target) {

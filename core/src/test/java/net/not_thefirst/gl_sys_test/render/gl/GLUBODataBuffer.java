@@ -54,6 +54,10 @@ public class GLUBODataBuffer extends AbstractUBODataBuffer<GLUBODataBuffer, Byte
         return this;
     }
 
+    public void reset() {
+        bufferBuilder.reset();
+    }
+
     public ByteBuffer build() {
         return bufferBuilder.build();
     }

@@ -21,6 +21,9 @@ public abstract class AbstractStaticMesh<P extends AbstractRenderPass<?>> implem
     public int getIndexCount() {
         return this.primitive.indicesPerPrimitive();
     }
+
+    public abstract int getVertexCount();
+
     @Override
     public abstract void close();
 

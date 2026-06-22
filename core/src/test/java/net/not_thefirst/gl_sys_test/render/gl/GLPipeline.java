@@ -73,10 +73,6 @@ public class GLPipeline extends AbstractPipeline {
         return ubos;
     }
 
-    private static int align16(int value) {
-        return (value + 15) & ~15;
-    }
-
     private void createUniformBuffers(GLProgram program) {
 
         for (Entry<String, Integer> entry :
@@ -108,8 +104,7 @@ public class GLPipeline extends AbstractPipeline {
                     GL31.GL_UNIFORM_BLOCK_DATA_SIZE
                 );
 
-            int alignedSize =
-                align16(blockSize);
+            int alignedSize = blockSize;
 
             program.bindUniformBlock(
                 blockName,

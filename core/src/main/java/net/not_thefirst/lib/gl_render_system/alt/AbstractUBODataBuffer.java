@@ -29,4 +29,6 @@ public abstract class AbstractUBODataBuffer<T extends AbstractUBODataBuffer<T, R
     public abstract T putMat4(Matrix4f mat);
 
     public abstract R build();
+
+    public abstract void reset();
 }

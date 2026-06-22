@@ -1,18 +1,26 @@
 package net.not_thefirst.lib.gl_render_system.shader;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-
-import org.lwjgl.BufferUtils;
+import java.nio.ByteOrder;
 
 import org.joml.Matrix4f;
-
 public final class Std140BufferBuilder {
 
     private final ByteBuffer buffer;
+    private final float[] matrixCache = new float[16]; // Avoids FloatBuffer allocation
 
-    public Std140BufferBuilder(int size) {
-        buffer = BufferUtils.createByteBuffer(size);
+    /**
+     * Allocate a single scratchpad buffer once at startup.
+     * Give it enough size to hold the largest single UBO structure in your engine (e.g., 1KB).
+     */
+    public Std140BufferBuilder(int initialSize) {
+        this.buffer = ByteBuffer.allocateDirect(initialSize);
+        this.buffer.order(ByteOrder.nativeOrder());
+    }
+
+    public Std140BufferBuilder reset() {
+        buffer.clear();
+        return this;
     }
 
     private void align(int align) {
@@ -45,7 +53,7 @@ public final class Std140BufferBuilder {
         buffer.putFloat(x);
         buffer.putFloat(y);
         buffer.putFloat(z);
-        buffer.putFloat(0.0f); // padding
+        buffer.putFloat(0.0f); // std140 pad
         return this;
     }
 
@@ -69,18 +77,17 @@ public final class Std140BufferBuilder {
 
     public Std140BufferBuilder putMat4(Matrix4f mat) {
         align(16);
-        FloatBuffer fb = BufferUtils.createFloatBuffer(16);
-        mat.get(fb);
-        
-        fb.position(0);
-        fb.limit(16);
-
-        while (fb.hasRemaining()) {
-            buffer.putFloat(fb.get());
+        mat.get(matrixCache);
+        for (int i = 0; i < 16; i++) {
+            buffer.putFloat(matrixCache[i]);
         }
         return this;
     }
 
+    /**
+     * Prepares the internal buffer to be read by the OpenGL driver.
+     * @return The internal raw ByteBuffer, flipped and ready.
+     */
     public ByteBuffer build() {
         buffer.flip();
         return buffer;
