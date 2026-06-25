@@ -3,9 +3,10 @@ package net.not_thefirst.lib.gl_render_system.alt;
 import org.joml.Matrix4f;
 
 
-public abstract class AbstractUBODataBuffer<T extends AbstractUBODataBuffer<T, R>, R> {
+public abstract class AbstractUBODataBuffer<T extends AbstractUBODataBuffer<T, R>, R> implements AutoCloseable {
     protected final String name;
     protected int size;
+    protected boolean closed = false;
 
     protected AbstractUBODataBuffer(String name, int size) {
         this.name = name;
@@ -31,4 +32,15 @@ public abstract class AbstractUBODataBuffer<T extends AbstractUBODataBuffer<T, R
     public abstract R build();
 
     public abstract void reset();
+
+    protected void assertClosed() { if (isClosed()) throw new IllegalStateException("Tried to close a closed buffer"); }
+    public boolean isClosed() {
+        return closed;
+    }
+    
+    @Override
+    public void close() {
+        assertClosed();
+        closed = true;
+    }
 }

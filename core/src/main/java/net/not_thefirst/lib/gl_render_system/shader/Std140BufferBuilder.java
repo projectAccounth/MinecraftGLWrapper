@@ -1,13 +1,16 @@
 package net.not_thefirst.lib.gl_render_system.shader;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import org.joml.Matrix4f;
-public final class Std140BufferBuilder {
+public final class Std140BufferBuilder implements Closeable {
 
     private final ByteBuffer buffer;
-    private final float[] matrixCache = new float[16]; // Avoids FloatBuffer allocation
+    private final float[] matrixCache = new float[16];
+    private boolean closed = false;
 
     /**
      * Allocate a single scratchpad buffer once at startup.
@@ -91,5 +94,15 @@ public final class Std140BufferBuilder {
     public ByteBuffer build() {
         buffer.flip();
         return buffer;
+    }
+
+    @Override
+    public void close() {
+        if (isClosed()) throw new IllegalStateException("Tried to close a closed buffer");
+        closed = true;
+    }
+
+    public boolean isClosed() {
+        return closed;
     }
 }
